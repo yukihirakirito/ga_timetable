@@ -1,0 +1,256 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ga-timetable.local/contracts/input_snapshot.schema.json",
+  "title": "Input snapshot",
+  "description": "Đầu vào đóng băng của một lần chạy (schedule_runs.input_snapshot). Go sinh ra, Python chỉ đọc. Các giá trị suy ra (số buổi, tiết/buổi...) đã được Go tính sẵn từ credit_rules.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "generated_at",
+    "semester",
+    "time_grid",
+    "rooms",
+    "lecturers",
+    "subjects",
+    "classes",
+    "sections"
+  ],
+  "properties": {
+    "schema_version": {
+      "description": "Phiên bản hợp đồng. Đổi cấu trúc thì tăng số, Python từ chối phiên bản không hỗ trợ.",
+      "const": "1.0"
+    },
+    "generated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "semester": { "$ref": "#/$defs/semester" },
+    "time_grid": { "$ref": "#/$defs/time_grid" },
+    "rooms": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/room" }
+    },
+    "lecturers": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/lecturer" }
+    },
+    "subjects": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/subject" }
+    },
+    "classes": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/student_class" }
+    },
+    "sections": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/section" }
+    }
+  },
+  "$defs": {
+    "id": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "code": {
+      "type": "string",
+      "minLength": 1
+    },
+    "date": {
+      "type": "string",
+      "format": "date"
+    },
+    "day": {
+      "description": "Thứ trong tuần mẫu: 1 = Thứ 2 ... 6 = Thứ 7",
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 6
+    },
+    "period": {
+      "description": "Tiết trong ngày, 1..12",
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 12
+    },
+    "room_type": {
+      "type": "string",
+      "enum": ["THEORY", "LAB", "STUDIO"]
+    },
+    "time_range": {
+      "description": "Khoảng tiết liền kề trong một ngày của tuần mẫu, gồm cả hai đầu",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["day", "period_from", "period_to"],
+      "properties": {
+        "day": { "$ref": "#/$defs/day" },
+        "period_from": { "$ref": "#/$defs/period" },
+        "period_to": { "$ref": "#/$defs/period" }
+      }
+    },
+    "semester": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "name", "start_date", "end_date", "study_weeks", "exam_weeks", "holidays"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "name": { "type": "string" },
+        "start_date": {
+          "description": "Luôn là Thứ 2 (DB đã kiểm tra)",
+          "$ref": "#/$defs/date"
+        },
+        "end_date": { "$ref": "#/$defs/date" },
+        "study_weeks": { "type": "integer", "minimum": 1 },
+        "exam_weeks": { "type": "integer", "minimum": 0 },
+        "holidays": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["date", "name"],
+            "properties": {
+              "date": { "$ref": "#/$defs/date" },
+              "name": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "time_grid": {
+      "description": "Lưới thời gian. Đưa vào snapshot để solver không phải hard-code ranh giới ca (H8).",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["days_per_week", "periods_per_day", "shifts"],
+      "properties": {
+        "days_per_week": { "const": 6 },
+        "periods_per_day": { "const": 12 },
+        "shifts": {
+          "description": "Các ca, không chồng nhau. Buổi học phải nằm trọn trong một ca.",
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["code", "first_period", "last_period"],
+            "properties": {
+              "code": { "type": "string", "enum": ["MORNING", "AFTERNOON"] },
+              "first_period": { "$ref": "#/$defs/period" },
+              "last_period": { "$ref": "#/$defs/period" }
+            }
+          }
+        }
+      }
+    },
+    "room": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "code", "room_type", "capacity"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "code": { "$ref": "#/$defs/code" },
+        "room_type": { "$ref": "#/$defs/room_type" },
+        "capacity": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "lecturer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "code", "max_periods_per_week", "subject_ids", "unavailable", "preferred"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "code": { "$ref": "#/$defs/code" },
+        "max_periods_per_week": {
+          "description": "Ràng buộc mềm S8",
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 72
+        },
+        "subject_ids": {
+          "description": "Môn dạy được (H7). Chỉ gồm môn có lớp-môn trong học kỳ.",
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/id" }
+        },
+        "unavailable": {
+          "description": "Khung giờ bận (H5)",
+          "type": "array",
+          "items": { "$ref": "#/$defs/time_range" }
+        },
+        "preferred": {
+          "description": "Khung giờ ưu tiên (S5)",
+          "type": "array",
+          "items": { "$ref": "#/$defs/time_range" }
+        }
+      }
+    },
+    "subject": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "code", "credits", "room_type"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "code": { "$ref": "#/$defs/code" },
+        "credits": { "type": "integer", "minimum": 1, "maximum": 5 },
+        "room_type": { "$ref": "#/$defs/room_type" }
+      }
+    },
+    "student_class": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "code", "term_no", "size"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "code": { "$ref": "#/$defs/code" },
+        "term_no": { "type": "integer", "minimum": 1 },
+        "size": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "section": {
+      "description": "Lớp-môn. Mỗi lớp-môn sinh ra sessions_per_week buổi trong tuần mẫu.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "class_id",
+        "subject_id",
+        "total_periods",
+        "periods_per_session",
+        "sessions_per_week",
+        "total_sessions"
+      ],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "class_id": { "$ref": "#/$defs/id" },
+        "subject_id": { "$ref": "#/$defs/id" },
+        "total_periods": {
+          "description": "15 x số tín chỉ",
+          "type": "integer",
+          "minimum": 1
+        },
+        "periods_per_session": {
+          "description": "Độ dài một buổi trong tuần mẫu",
+          "type": "integer",
+          "minimum": 2,
+          "maximum": 5
+        },
+        "sessions_per_week": {
+          "description": "Số buổi trong tuần mẫu; các buổi phải khác ngày (H6) nên tối đa 6",
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 6
+        },
+        "total_sessions": {
+          "description": "ceil(total_periods / periods_per_session); buổi cuối dài total_periods - (total_sessions - 1) x periods_per_session",
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    }
+  }
+}

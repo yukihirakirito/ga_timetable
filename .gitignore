@@ -1,0 +1,15 @@
+.env
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+
+# Go
+/admin/bin/
+
+# Editor / OS
+.idea/
+.vscode/
+.DS_Store

@@ -1,0 +1,15 @@
+BEGIN;
+
+DROP TABLE IF EXISTS student_classes;
+DROP TABLE IF EXISTS lecturer_slots;
+DROP TABLE IF EXISTS lecturer_subjects;
+DROP TABLE IF EXISTS lecturers;
+DROP TABLE IF EXISTS rooms;
+DROP TABLE IF EXISTS curriculum_items;
+DROP TABLE IF EXISTS subjects;
+DROP TABLE IF EXISTS credit_rules;
+DROP TABLE IF EXISTS room_types;
+DROP TABLE IF EXISTS majors;
+DROP TABLE IF EXISTS departments;
+
+COMMIT;

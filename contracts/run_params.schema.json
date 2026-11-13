@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ga-timetable.local/contracts/run_params.schema.json",
+  "title": "schedule_runs.params",
+  "description": "Tham số của một lần chạy GA. Mọi trường đều tuỳ chọn; thiếu thì solver dùng giá trị mặc định (solver/src/solver/ga.py GAParams, evaluate.py Weights). Trường lạ bị từ chối để bắt lỗi gõ sai tên.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "ga": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "pop_size":       { "type": "integer", "minimum": 2, "maximum": 1000, "description": "kích thước quần thể (mặc định 30)" },
+        "generations":    { "type": "integer", "minimum": 0, "maximum": 100000, "description": "số thế hệ tối đa (200)" },
+        "elite":          { "type": "integer", "minimum": 0, "description": "số cá thể tốt nhất giữ nguyên (2), phải < pop_size" },
+        "tournament_k":   { "type": "integer", "minimum": 1, "description": "kích thước tournament (3), phải <= pop_size" },
+        "crossover_rate": { "type": "number", "minimum": 0, "maximum": 1, "description": "xác suất lai ghép (0.8)" },
+        "mutation_max":   { "type": "integer", "minimum": 1, "maximum": 50, "description": "số thao tác đột biến tối đa mỗi con (3)" },
+        "local_search":   { "type": "boolean", "description": "memetic: sửa xung đột + cải thiện mềm (true)" },
+        "ls_steps":       { "type": "integer", "minimum": 0, "description": "số bước cải thiện mềm mỗi con (150)" },
+        "repair_steps":   { "type": "integer", "minimum": 0, "description": "số bước min-conflicts tối đa (300)" },
+        "init_ls_steps":  { "type": "integer", "minimum": 0, "description": "số bước cải thiện mềm cho cá thể ban đầu (500)" },
+        "seed_dsatur":    { "type": "integer", "minimum": 0, "description": "số cá thể ban đầu lấy từ DSatur (1)" },
+        "stagnation":     { "type": "integer", "minimum": 1, "description": "dừng nếu bấy nhiêu thế hệ không cải thiện (60)" },
+        "time_limit":     { "type": ["number", "null"], "exclusiveMinimum": 0, "description": "giới hạn thời gian, giây (null: không giới hạn)" },
+        "seed":           { "type": "integer", "minimum": 0, "description": "seed ngẫu nhiên (0)" }
+      }
+    },
+    "weights": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Trọng số điểm phạt. Phải giữ tổng phạt mềm của lịch tốt < hard.",
+      "properties": {
+        "hard": { "type": "number", "exclusiveMinimum": 0, "description": "mỗi vi phạm cứng (10000)" },
+        "S1":   { "type": "number", "minimum": 0, "description": "lịch lớp không gọn (1)" },
+        "S2":   { "type": "number", "minimum": 0, "description": "buổi cùng môn ở hai ngày liền nhau (5)" },
+        "S4":   { "type": "number", "minimum": 0, "description": "số ngày giảng viên lên trường (1)" },
+        "S5":   { "type": "number", "minimum": 0, "description": "bỏ trống giờ ưu tiên (1)" },
+        "S6":   { "type": "number", "minimum": 0, "description": "lệch tải giảng viên (0.5)" },
+        "S7":   { "type": "number", "minimum": 0, "description": "lớp-môn đổi phòng (1)" },
+        "S8":   { "type": "number", "minimum": 0, "description": "mỗi tiết vượt tải tối đa (5)" }
+      }
+    }
+  },
+  "examples": [
+    { "ga": { "generations": 100, "seed": 1, "time_limit": 120 }, "weights": { "S2": 5 } },
+    {}
+  ]
+}

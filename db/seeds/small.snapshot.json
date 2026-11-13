@@ -1,0 +1,1386 @@
+{
+  "schema_version": "1.0",
+  "generated_at": "2026-11-13T00:00:00+07:00",
+  "semester": {
+    "id": 1,
+    "name": "Fall 2026",
+    "start_date": "2026-09-07",
+    "end_date": "2027-01-09",
+    "study_weeks": 15,
+    "exam_weeks": 3,
+    "holidays": [
+      {
+        "date": "2026-11-20",
+        "name": "Ngày Nhà giáo Việt Nam (nghỉ theo lịch trường)"
+      },
+      {
+        "date": "2027-01-01",
+        "name": "Tết Dương lịch"
+      }
+    ]
+  },
+  "time_grid": {
+    "days_per_week": 6,
+    "periods_per_day": 12,
+    "shifts": [
+      {
+        "code": "MORNING",
+        "first_period": 1,
+        "last_period": 6
+      },
+      {
+        "code": "AFTERNOON",
+        "first_period": 7,
+        "last_period": 12
+      }
+    ]
+  },
+  "rooms": [
+    {
+      "id": 1,
+      "code": "P001",
+      "room_type": "THEORY",
+      "capacity": 60
+    },
+    {
+      "id": 2,
+      "code": "P002",
+      "room_type": "THEORY",
+      "capacity": 50
+    },
+    {
+      "id": 3,
+      "code": "P003",
+      "room_type": "THEORY",
+      "capacity": 40
+    },
+    {
+      "id": 4,
+      "code": "L001",
+      "room_type": "LAB",
+      "capacity": 45
+    },
+    {
+      "id": 5,
+      "code": "L002",
+      "room_type": "LAB",
+      "capacity": 45
+    },
+    {
+      "id": 6,
+      "code": "L003",
+      "room_type": "LAB",
+      "capacity": 35
+    },
+    {
+      "id": 7,
+      "code": "L004",
+      "room_type": "LAB",
+      "capacity": 35
+    }
+  ],
+  "lecturers": [
+    {
+      "id": 1,
+      "code": "GV001",
+      "max_periods_per_week": 24,
+      "subject_ids": [
+        2,
+        3,
+        4
+      ],
+      "unavailable": [],
+      "preferred": []
+    },
+    {
+      "id": 2,
+      "code": "GV002",
+      "max_periods_per_week": 24,
+      "subject_ids": [
+        2,
+        3,
+        4
+      ],
+      "unavailable": [],
+      "preferred": [
+        {
+          "day": 1,
+          "period_from": 1,
+          "period_to": 6
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "code": "GV003",
+      "max_periods_per_week": 20,
+      "subject_ids": [
+        15,
+        30,
+        37,
+        39
+      ],
+      "unavailable": [],
+      "preferred": [
+        {
+          "day": 2,
+          "period_from": 1,
+          "period_to": 6
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "code": "GV004",
+      "max_periods_per_week": 24,
+      "subject_ids": [
+        11,
+        21,
+        27
+      ],
+      "unavailable": [
+        {
+          "day": 2,
+          "period_from": 1,
+          "period_to": 6
+        },
+        {
+          "day": 1,
+          "period_from": 7,
+          "period_to": 12
+        }
+      ],
+      "preferred": [
+        {
+          "day": 6,
+          "period_from": 7,
+          "period_to": 12
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "code": "GV005",
+      "max_periods_per_week": 24,
+      "subject_ids": [
+        6,
+        17,
+        35
+      ],
+      "unavailable": [],
+      "preferred": []
+    },
+    {
+      "id": 6,
+      "code": "GV006",
+      "max_periods_per_week": 20,
+      "subject_ids": [
+        12,
+        15,
+        29
+      ],
+      "unavailable": [],
+      "preferred": []
+    },
+    {
+      "id": 7,
+      "code": "GV007",
+      "max_periods_per_week": 16,
+      "subject_ids": [
+        18,
+        29,
+        33
+      ],
+      "unavailable": [],
+      "preferred": []
+    },
+    {
+      "id": 8,
+      "code": "GV008",
+      "max_periods_per_week": 20,
+      "subject_ids": [
+        10,
+        28,
+        37,
+        38
+      ],
+      "unavailable": [
+        {
+          "day": 2,
+          "period_from": 1,
+          "period_to": 6
+        },
+        {
+          "day": 4,
+          "period_from": 7,
+          "period_to": 12
+        }
+      ],
+      "preferred": []
+    },
+    {
+      "id": 9,
+      "code": "GV009",
+      "max_periods_per_week": 20,
+      "subject_ids": [
+        9,
+        23,
+        36,
+        42
+      ],
+      "unavailable": [
+        {
+          "day": 6,
+          "period_from": 7,
+          "period_to": 12
+        },
+        {
+          "day": 4,
+          "period_from": 7,
+          "period_to": 12
+        }
+      ],
+      "preferred": []
+    },
+    {
+      "id": 10,
+      "code": "GV010",
+      "max_periods_per_week": 16,
+      "subject_ids": [
+        22,
+        28,
+        33
+      ],
+      "unavailable": [],
+      "preferred": []
+    },
+    {
+      "id": 11,
+      "code": "GV011",
+      "max_periods_per_week": 20,
+      "subject_ids": [
+        10,
+        27,
+        38,
+        43
+      ],
+      "unavailable": [],
+      "preferred": [
+        {
+          "day": 2,
+          "period_from": 7,
+          "period_to": 12
+        }
+      ]
+    },
+    {
+      "id": 12,
+      "code": "GV012",
+      "max_periods_per_week": 16,
+      "subject_ids": [
+        11,
+        18,
+        34
+      ],
+      "unavailable": [],
+      "preferred": []
+    },
+    {
+      "id": 13,
+      "code": "GV013",
+      "max_periods_per_week": 16,
+      "subject_ids": [
+        16,
+        21,
+        24
+      ],
+      "unavailable": [],
+      "preferred": []
+    },
+    {
+      "id": 14,
+      "code": "GV014",
+      "max_periods_per_week": 20,
+      "subject_ids": [
+        12,
+        16,
+        24
+      ],
+      "unavailable": [],
+      "preferred": [
+        {
+          "day": 3,
+          "period_from": 1,
+          "period_to": 6
+        },
+        {
+          "day": 4,
+          "period_from": 1,
+          "period_to": 6
+        }
+      ]
+    },
+    {
+      "id": 15,
+      "code": "GV015",
+      "max_periods_per_week": 20,
+      "subject_ids": [
+        6,
+        30,
+        35,
+        39
+      ],
+      "unavailable": [],
+      "preferred": []
+    },
+    {
+      "id": 16,
+      "code": "GV016",
+      "max_periods_per_week": 16,
+      "subject_ids": [
+        17,
+        23,
+        34,
+        43
+      ],
+      "unavailable": [
+        {
+          "day": 4,
+          "period_from": 7,
+          "period_to": 12
+        }
+      ],
+      "preferred": [
+        {
+          "day": 6,
+          "period_from": 1,
+          "period_to": 6
+        },
+        {
+          "day": 3,
+          "period_from": 1,
+          "period_to": 6
+        }
+      ]
+    },
+    {
+      "id": 17,
+      "code": "GV017",
+      "max_periods_per_week": 16,
+      "subject_ids": [
+        9,
+        22,
+        36,
+        42
+      ],
+      "unavailable": [],
+      "preferred": []
+    },
+    {
+      "id": 18,
+      "code": "GV018",
+      "max_periods_per_week": 20,
+      "subject_ids": [
+        1,
+        7,
+        13,
+        19
+      ],
+      "unavailable": [
+        {
+          "day": 2,
+          "period_from": 7,
+          "period_to": 12
+        },
+        {
+          "day": 3,
+          "period_from": 1,
+          "period_to": 6
+        }
+      ],
+      "preferred": []
+    },
+    {
+      "id": 19,
+      "code": "GV019",
+      "max_periods_per_week": 16,
+      "subject_ids": [
+        1,
+        7,
+        13,
+        19
+      ],
+      "unavailable": [],
+      "preferred": [
+        {
+          "day": 1,
+          "period_from": 1,
+          "period_to": 6
+        }
+      ]
+    },
+    {
+      "id": 20,
+      "code": "GV020",
+      "max_periods_per_week": 16,
+      "subject_ids": [
+        5,
+        14,
+        25,
+        31
+      ],
+      "unavailable": [],
+      "preferred": []
+    },
+    {
+      "id": 21,
+      "code": "GV021",
+      "max_periods_per_week": 24,
+      "subject_ids": [
+        14,
+        20,
+        26,
+        32
+      ],
+      "unavailable": [],
+      "preferred": []
+    },
+    {
+      "id": 22,
+      "code": "GV022",
+      "max_periods_per_week": 24,
+      "subject_ids": [
+        8,
+        25,
+        31,
+        32
+      ],
+      "unavailable": [
+        {
+          "day": 1,
+          "period_from": 7,
+          "period_to": 12
+        }
+      ],
+      "preferred": [
+        {
+          "day": 6,
+          "period_from": 7,
+          "period_to": 12
+        },
+        {
+          "day": 1,
+          "period_from": 1,
+          "period_to": 6
+        }
+      ]
+    },
+    {
+      "id": 23,
+      "code": "GV023",
+      "max_periods_per_week": 20,
+      "subject_ids": [
+        5,
+        8,
+        20,
+        26
+      ],
+      "unavailable": [],
+      "preferred": []
+    }
+  ],
+  "subjects": [
+    {
+      "id": 1,
+      "code": "ENG101",
+      "credits": 2,
+      "room_type": "THEORY"
+    },
+    {
+      "id": 2,
+      "code": "COM101",
+      "credits": 2,
+      "room_type": "LAB"
+    },
+    {
+      "id": 3,
+      "code": "PRO101",
+      "credits": 3,
+      "room_type": "LAB"
+    },
+    {
+      "id": 4,
+      "code": "MAT101",
+      "credits": 3,
+      "room_type": "THEORY"
+    },
+    {
+      "id": 5,
+      "code": "SKI101",
+      "credits": 1,
+      "room_type": "THEORY"
+    },
+    {
+      "id": 6,
+      "code": "SOF101",
+      "credits": 4,
+      "room_type": "LAB"
+    },
+    {
+      "id": 7,
+      "code": "ENG102",
+      "credits": 2,
+      "room_type": "THEORY"
+    },
+    {
+      "id": 8,
+      "code": "POL101",
+      "credits": 3,
+      "room_type": "THEORY"
+    },
+    {
+      "id": 9,
+      "code": "SOF201",
+      "credits": 3,
+      "room_type": "LAB"
+    },
+    {
+      "id": 10,
+      "code": "SOF202",
+      "credits": 3,
+      "room_type": "LAB"
+    },
+    {
+      "id": 11,
+      "code": "SOF203",
+      "credits": 3,
+      "room_type": "LAB"
+    },
+    {
+      "id": 12,
+      "code": "SE201",
+      "credits": 3,
+      "room_type": "THEORY"
+    },
+    {
+      "id": 13,
+      "code": "ENG103",
+      "credits": 2,
+      "room_type": "THEORY"
+    },
+    {
+      "id": 14,
+      "code": "POL102",
+      "credits": 2,
+      "room_type": "THEORY"
+    },
+    {
+      "id": 15,
+      "code": "SOF301",
+      "credits": 3,
+      "room_type": "THEORY"
+    },
+    {
+      "id": 16,
+      "code": "SOF302",
+      "credits": 4,
+      "room_type": "LAB"
+    },
+    {
+      "id": 17,
+      "code": "SOF303",
+      "credits": 3,
+      "room_type": "LAB"
+    },
+    {
+      "id": 18,
+      "code": "SE301",
+      "credits": 3,
+      "room_type": "LAB"
+    },
+    {
+      "id": 19,
+      "code": "ENG104",
+      "credits": 2,
+      "room_type": "THEORY"
+    },
+    {
+      "id": 20,
+      "code": "POL103",
+      "credits": 2,
+      "room_type": "THEORY"
+    },
+    {
+      "id": 21,
+      "code": "SOF401",
+      "credits": 3,
+      "room_type": "LAB"
+    },
+    {
+      "id": 22,
+      "code": "SOF402",
+      "credits": 3,
+      "room_type": "LAB"
+    },
+    {
+      "id": 23,
+      "code": "SE401",
+      "credits": 4,
+      "room_type": "LAB"
+    },
+    {
+      "id": 24,
+      "code": "SE402",
+      "credits": 3,
+      "room_type": "LAB"
+    },
+    {
+      "id": 25,
+      "code": "POL104",
+      "credits": 2,
+      "room_type": "THEORY"
+    },
+    {
+      "id": 26,
+      "code": "LAW101",
+      "credits": 2,
+      "room_type": "THEORY"
+    },
+    {
+      "id": 27,
+      "code": "SOF501",
+      "credits": 3,
+      "room_type": "THEORY"
+    },
+    {
+      "id": 28,
+      "code": "SOF502",
+      "credits": 3,
+      "room_type": "THEORY"
+    },
+    {
+      "id": 29,
+      "code": "SE501",
+      "credits": 3,
+      "room_type": "LAB"
+    },
+    {
+      "id": 30,
+      "code": "SE502",
+      "credits": 4,
+      "room_type": "LAB"
+    },
+    {
+      "id": 31,
+      "code": "POL105",
+      "credits": 2,
+      "room_type": "THEORY"
+    },
+    {
+      "id": 32,
+      "code": "SKI201",
+      "credits": 2,
+      "room_type": "THEORY"
+    },
+    {
+      "id": 33,
+      "code": "SOF601",
+      "credits": 5,
+      "room_type": "LAB"
+    },
+    {
+      "id": 34,
+      "code": "SE601",
+      "credits": 3,
+      "room_type": "LAB"
+    },
+    {
+      "id": 35,
+      "code": "SE602",
+      "credits": 3,
+      "room_type": "THEORY"
+    },
+    {
+      "id": 36,
+      "code": "WEB201",
+      "credits": 3,
+      "room_type": "LAB"
+    },
+    {
+      "id": 37,
+      "code": "WEB301",
+      "credits": 3,
+      "room_type": "LAB"
+    },
+    {
+      "id": 38,
+      "code": "WEB401",
+      "credits": 4,
+      "room_type": "LAB"
+    },
+    {
+      "id": 39,
+      "code": "WEB402",
+      "credits": 3,
+      "room_type": "LAB"
+    },
+    {
+      "id": 42,
+      "code": "WEB601",
+      "credits": 3,
+      "room_type": "LAB"
+    },
+    {
+      "id": 43,
+      "code": "WEB602",
+      "credits": 3,
+      "room_type": "THEORY"
+    }
+  ],
+  "classes": [
+    {
+      "id": 1,
+      "code": "SE-K1-01",
+      "term_no": 1,
+      "size": 32
+    },
+    {
+      "id": 2,
+      "code": "SE-K2-01",
+      "term_no": 2,
+      "size": 34
+    },
+    {
+      "id": 3,
+      "code": "SE-K3-01",
+      "term_no": 3,
+      "size": 40
+    },
+    {
+      "id": 4,
+      "code": "SE-K4-01",
+      "term_no": 4,
+      "size": 31
+    },
+    {
+      "id": 5,
+      "code": "SE-K5-01",
+      "term_no": 5,
+      "size": 35
+    },
+    {
+      "id": 6,
+      "code": "SE-K6-01",
+      "term_no": 6,
+      "size": 39
+    },
+    {
+      "id": 7,
+      "code": "WEB-K1-01",
+      "term_no": 1,
+      "size": 39
+    },
+    {
+      "id": 8,
+      "code": "WEB-K2-01",
+      "term_no": 2,
+      "size": 36
+    },
+    {
+      "id": 9,
+      "code": "WEB-K3-01",
+      "term_no": 3,
+      "size": 31
+    },
+    {
+      "id": 10,
+      "code": "WEB-K4-01",
+      "term_no": 4,
+      "size": 40
+    },
+    {
+      "id": 11,
+      "code": "WEB-K6-01",
+      "term_no": 6,
+      "size": 35
+    }
+  ],
+  "sections": [
+    {
+      "id": 1,
+      "class_id": 1,
+      "subject_id": 1,
+      "total_periods": 30,
+      "periods_per_session": 3,
+      "sessions_per_week": 1,
+      "total_sessions": 10
+    },
+    {
+      "id": 2,
+      "class_id": 1,
+      "subject_id": 2,
+      "total_periods": 30,
+      "periods_per_session": 3,
+      "sessions_per_week": 1,
+      "total_sessions": 10
+    },
+    {
+      "id": 3,
+      "class_id": 1,
+      "subject_id": 3,
+      "total_periods": 45,
+      "periods_per_session": 3,
+      "sessions_per_week": 2,
+      "total_sessions": 15
+    },
+    {
+      "id": 4,
+      "class_id": 1,
+      "subject_id": 4,
+      "total_periods": 45,
+      "periods_per_session": 3,
+      "sessions_per_week": 2,
+      "total_sessions": 15
+    },
+    {
+      "id": 5,
+      "class_id": 1,
+      "subject_id": 5,
+      "total_periods": 15,
+      "periods_per_session": 3,
+      "sessions_per_week": 1,
+      "total_sessions": 5
+    },
+    {
+      "id": 6,
+      "class_id": 1,
+      "subject_id": 6,
+      "total_periods": 60,
+      "periods_per_session": 4,
+      "sessions_per_week": 2,
+      "total_sessions": 15
+    },
+    {
+      "id": 7,
+      "class_id": 2,
+      "subject_id": 7,
+      "total_periods": 30,
+      "periods_per_session": 3,
+      "sessions_per_week": 1,
+      "total_sessions": 10
+    },
+    {
+      "id": 8,
+      "class_id": 2,
+      "subject_id": 8,
+      "total_periods": 45,
+      "periods_per_session": 3,
+      "sessions_per_week": 2,
+      "total_sessions": 15
+    },
+    {
+      "id": 9,
+      "class_id": 2,
+      "subject_id": 9,
+      "total_periods": 45,
+      "periods_per_session": 3,
+      "sessions_per_week": 2,
+      "total_sessions": 15
+    },
+    {
+      "id": 10,
+      "class_id": 2,
+      "subject_id": 10,
+      "total_periods": 45,
+      "periods_per_session": 3,
+      "sessions_per_week": 2,
+      "total_sessions": 15
+    },
+    {
+      "id": 11,
+      "class_id": 2,
+      "subject_id": 11,
+      "total_periods": 45,
+      "periods_per_session": 3,
+      "sessions_per_week": 2,
+      "total_sessions": 15
+    },
+    {
+      "id": 12,
+      "class_id": 2,
+      "subject_id": 12,
+      "total_periods": 45,
+      "periods_per_session": 3,
+      "sessions_per_week": 2,
+      "total_sessions": 15
+    },
+    {
+      "id": 13,
+      "class_id": 3,
+      "subject_id": 13,
+      "total_periods": 30,
+      "periods_per_session": 3,
+      "sessions_per_week": 1,
+      "total_sessions": 10
+    },
+    {
+      "id": 14,
+      "class_id": 3,
+      "subject_id": 14,
+      "total_periods": 30,
+      "periods_per_session": 3,
+      "sessions_per_week": 1,
+      "total_sessions": 10
+    },
+    {
+      "id": 15,
+      "class_id": 3,
+      "subject_id": 15,
+      "total_periods": 45,
+      "periods_per_session": 3,
+      "sessions_per_week": 2,
+      "total_sessions": 15
+    },
+    {
+      "id": 16,
+      "class_id": 3,
+      "subject_id": 16,
+      "total_periods": 60,
+      "periods_per_session": 4,
+      "sessions_per_week": 2,
+      "total_sessions": 15
+    },
+    {
+      "id": 17,
+      "class_id": 3,
+      "subject_id": 17,
+      "total_periods": 45,
+      "periods_per_session": 3,
+      "sessions_per_week": 2,
+      "total_sessions": 15
+    },
+    {
+      "id": 18,
+      "class_id": 3,
+      "subject_id": 18,
+      "total_periods": 45,
+      "periods_per_session": 3,
+      "sessions_per_week": 2,
+      "total_sessions": 15
+    },
+    {
+      "id": 19,
+      "class_id": 4,
+      "subject_id": 19,
+      "total_periods": 30,
+      "periods_per_session": 3,
+      "sessions_per_week": 1,
+      "total_sessions": 10
+    },
+    {
+      "id": 20,
+      "class_id": 4,
+      "subject_id": 20,
+      "total_periods": 30,
+      "periods_per_session": 3,
+      "sessions_per_week": 1,
+      "total_sessions": 10
+    },
+    {
+      "id": 21,
+      "class_id": 4,
+      "subject_id": 21,
+      "total_periods": 45,
+      "periods_per_session": 3,
+      "sessions_per_week": 2,
+      "total_sessions": 15
+    },
+    {
+      "id": 22,
+      "class_id": 4,
+      "subject_id": 22,
+      "total_periods": 45,
+      "periods_per_session": 3,
+      "sessions_per_week": 2,
+      "total_sessions": 15
+    },
+    {
+      "id": 23,
+      "class_id": 4,
+      "subject_id": 23,
+      "total_periods": 60,
+      "periods_per_session": 4,
+      "sessions_per_week": 2,
+      "total_sessions": 15
+    },
+    {
+      "id": 24,
+      "class_id": 4,
+      "subject_id": 24,
+      "total_periods": 45,
+      "periods_per_session": 3,
+      "sessions_per_week": 2,
+      "total_sessions": 15
+    },
+    {
+      "id": 25,
+      "class_id": 5,
+      "subject_id": 25,
+      "total_periods": 30,
+      "periods_per_session": 3,
+      "sessions_per_week": 1,
+      "total_sessions": 10
+    },
+    {
+      "id": 26,
+      "class_id": 5,
+      "subject_id": 26,
+      "total_periods": 30,
+      "periods_per_session": 3,
+      "sessions_per_week": 1,
+      "total_sessions": 10
+    },
+    {
+      "id": 27,
+      "class_id": 5,
+      "subject_id": 27,
+      "total_periods": 45,
+      "periods_per_session": 3,
+      "sessions_per_week": 2,
+      "total_sessions": 15
+    },
+    {
+      "id": 28,
+      "class_id": 5,
+      "subject_id": 28,
+      "total_periods": 45,
+      "periods_per_session": 3,
+      "sessions_per_week": 2,
+      "total_sessions": 15
+    },
+    {
+      "id": 29,
+      "class_id": 5,
+      "subject_id": 29,
+      "total_periods": 45,
+      "periods_per_session": 3,
+      "sessions_per_week": 2,
+      "total_sessions": 15
+    },
+    {
+      "id": 30,
+      "class_id": 5,
+      "subject_id": 30,
+      "total_periods": 60,
+      "periods_per_session": 4,
+      "sessions_per_week": 2,
+      "total_sessions": 15
+    },
+    {
+      "id": 31,
+      "class_id": 6,
+      "subject_id": 31,
+      "total_periods": 30,
+      "periods_per_session": 3,
+      "sessions_per_week": 1,
+      "total_sessions": 10
+    },
+    {
+      "id": 32,
+      "class_id": 6,
+      "subject_id": 32,
+      "total_periods": 30,
+      "periods_per_session": 3,
+      "sessions_per_week": 1,
+      "total_sessions": 10
+    },
+    {
+      "id": 33,
+      "class_id": 6,
+      "subject_id": 33,
+      "total_periods": 75,
+      "periods_per_session": 5,
+      "sessions_per_week": 2,
+      "total_sessions": 15
+    },
+    {
+      "id": 34,
+      "class_id": 6,
+      "subject_id": 34,
+      "total_periods": 45,
+      "periods_per_session": 3,
+      "sessions_per_week": 2,
+      "total_sessions": 15
+    },
+    {
+      "id": 35,
+      "class_id": 6,
+      "subject_id": 35,
+      "total_periods": 45,
+      "periods_per_session": 3,
+      "sessions_per_week": 2,
+      "total_sessions": 15
+    },
+    {
+      "id": 36,
+      "class_id": 7,
+      "subject_id": 1,
+      "total_periods": 30,
+      "periods_per_session": 3,
+      "sessions_per_week": 1,
+      "total_sessions": 10
+    },
+    {
+      "id": 37,
+      "class_id": 7,
+      "subject_id": 2,
+      "total_periods": 30,
+      "periods_per_session": 3,
+      "sessions_per_week": 1,
+      "total_sessions": 10
+    },
+    {
+      "id": 38,
+      "class_id": 7,
+      "subject_id": 3,
+      "total_periods": 45,
+      "periods_per_session": 3,
+      "sessions_per_week": 2,
+      "total_sessions": 15
+    },
+    {
+      "id": 39,
+      "class_id": 7,
+      "subject_id": 4,
+      "total_periods": 45,
+      "periods_per_session": 3,
+      "sessions_per_week": 2,
+      "total_sessions": 15
+    },
+    {
+      "id": 40,
+      "class_id": 7,
+      "subject_id": 5,
+      "total_periods": 15,
+      "periods_per_session": 3,
+      "sessions_per_week": 1,
+      "total_sessions": 5
+    },
+    {
+      "id": 41,
+      "class_id": 7,
+      "subject_id": 6,
+      "total_periods": 60,
+      "periods_per_session": 4,
+      "sessions_per_week": 2,
+      "total_sessions": 15
+    },
+    {
+      "id": 42,
+      "class_id": 8,
+      "subject_id": 7,
+      "total_periods": 30,
+      "periods_per_session": 3,
+      "sessions_per_week": 1,
+      "total_sessions": 10
+    },
+    {
+      "id": 43,
+      "class_id": 8,
+      "subject_id": 8,
+      "total_periods": 45,
+      "periods_per_session": 3,
+      "sessions_per_week": 2,
+      "total_sessions": 15
+    },
+    {
+      "id": 44,
+      "class_id": 8,
+      "subject_id": 9,
+      "total_periods": 45,
+      "periods_per_session": 3,
+      "sessions_per_week": 2,
+      "total_sessions": 15
+    },
+    {
+      "id": 45,
+      "class_id": 8,
+      "subject_id": 10,
+      "total_periods": 45,
+      "periods_per_session": 3,
+      "sessions_per_week": 2,
+      "total_sessions": 15
+    },
+    {
+      "id": 46,
+      "class_id": 8,
+      "subject_id": 11,
+      "total_periods": 45,
+      "periods_per_session": 3,
+      "sessions_per_week": 2,
+      "total_sessions": 15
+    },
+    {
+      "id": 47,
+      "class_id": 8,
+      "subject_id": 36,
+      "total_periods": 45,
+      "periods_per_session": 3,
+      "sessions_per_week": 2,
+      "total_sessions": 15
+    },
+    {
+      "id": 48,
+      "class_id": 9,
+      "subject_id": 13,
+      "total_periods": 30,
+      "periods_per_session": 3,
+      "sessions_per_week": 1,
+      "total_sessions": 10
+    },
+    {
+      "id": 49,
+      "class_id": 9,
+      "subject_id": 14,
+      "total_periods": 30,
+      "periods_per_session": 3,
+      "sessions_per_week": 1,
+      "total_sessions": 10
+    },
+    {
+      "id": 50,
+      "class_id": 9,
+      "subject_id": 15,
+      "total_periods": 45,
+      "periods_per_session": 3,
+      "sessions_per_week": 2,
+      "total_sessions": 15
+    },
+    {
+      "id": 51,
+      "class_id": 9,
+      "subject_id": 16,
+      "total_periods": 60,
+      "periods_per_session": 4,
+      "sessions_per_week": 2,
+      "total_sessions": 15
+    },
+    {
+      "id": 52,
+      "class_id": 9,
+      "subject_id": 17,
+      "total_periods": 45,
+      "periods_per_session": 3,
+      "sessions_per_week": 2,
+      "total_sessions": 15
+    },
+    {
+      "id": 53,
+      "class_id": 9,
+      "subject_id": 37,
+      "total_periods": 45,
+      "periods_per_session": 3,
+      "sessions_per_week": 2,
+      "total_sessions": 15
+    },
+    {
+      "id": 54,
+      "class_id": 10,
+      "subject_id": 19,
+      "total_periods": 30,
+      "periods_per_session": 3,
+      "sessions_per_week": 1,
+      "total_sessions": 10
+    },
+    {
+      "id": 55,
+      "class_id": 10,
+      "subject_id": 20,
+      "total_periods": 30,
+      "periods_per_session": 3,
+      "sessions_per_week": 1,
+      "total_sessions": 10
+    },
+    {
+      "id": 56,
+      "class_id": 10,
+      "subject_id": 21,
+      "total_periods": 45,
+      "periods_per_session": 3,
+      "sessions_per_week": 2,
+      "total_sessions": 15
+    },
+    {
+      "id": 57,
+      "class_id": 10,
+      "subject_id": 22,
+      "total_periods": 45,
+      "periods_per_session": 3,
+      "sessions_per_week": 2,
+      "total_sessions": 15
+    },
+    {
+      "id": 58,
+      "class_id": 10,
+      "subject_id": 38,
+      "total_periods": 60,
+      "periods_per_session": 4,
+      "sessions_per_week": 2,
+      "total_sessions": 15
+    },
+    {
+      "id": 59,
+      "class_id": 10,
+      "subject_id": 39,
+      "total_periods": 45,
+      "periods_per_session": 3,
+      "sessions_per_week": 2,
+      "total_sessions": 15
+    },
+    {
+      "id": 60,
+      "class_id": 11,
+      "subject_id": 31,
+      "total_periods": 30,
+      "periods_per_session": 3,
+      "sessions_per_week": 1,
+      "total_sessions": 10
+    },
+    {
+      "id": 61,
+      "class_id": 11,
+      "subject_id": 32,
+      "total_periods": 30,
+      "periods_per_session": 3,
+      "sessions_per_week": 1,
+      "total_sessions": 10
+    },
+    {
+      "id": 62,
+      "class_id": 11,
+      "subject_id": 33,
+      "total_periods": 75,
+      "periods_per_session": 5,
+      "sessions_per_week": 2,
+      "total_sessions": 15
+    },
+    {
+      "id": 63,
+      "class_id": 11,
+      "subject_id": 42,
+      "total_periods": 45,
+      "periods_per_session": 3,
+      "sessions_per_week": 2,
+      "total_sessions": 15
+    },
+    {
+      "id": 64,
+      "class_id": 11,
+      "subject_id": 43,
+      "total_periods": 45,
+      "periods_per_session": 3,
+      "sessions_per_week": 2,
+      "total_sessions": 15
+    }
+  ]
+}

@@ -1,0 +1,255 @@
+# Chương trình đào tạo Khoa CNTT (dữ liệu giả, đủ thực tế để GA có việc làm).
+#
+# Môn học ghi dạng: [mã, tên, tín chỉ, loại phòng]  (+ bộ môn nếu khác mặc định)
+# Mỗi ngành, mỗi kỳ = môn chung (common) + môn nhóm ngành (groups) + môn riêng của ngành (majors).
+#
+# Tổng tín chỉ mỗi kỳ:  kỳ 1: 15 | kỳ 2: 17 | kỳ 3: 17 | kỳ 4: 17 | kỳ 5: 17 | kỳ 6: 15
+#   kỳ 1: chung 11 + nhóm 4
+#   kỳ 2: chung 5  + nhóm 9  + ngành 3
+#   kỳ 3: chung 4  + nhóm 10 + ngành 3
+#   kỳ 4: chung 4  + nhóm 6  + ngành 7
+#   kỳ 5: chung 4  + nhóm 6  + ngành 7
+#   kỳ 6: chung 4  + nhóm 5 (đồ án) + ngành 6
+
+departments:
+  CS:  Bộ môn Cơ sở CNTT
+  SWE: Bộ môn Công nghệ phần mềm
+  DAI: Bộ môn Dữ liệu và Trí tuệ nhân tạo
+  INF: Bộ môn Hạ tầng và An ninh mạng
+  DES: Bộ môn Thiết kế
+  ENG: Bộ môn Ngoại ngữ
+  POL: Bộ môn Lý luận chính trị và Kỹ năng
+
+# Môn chung cho mọi ngành (bộ môn ghi rõ từng môn)
+common:
+  1:
+    - [ENG101, Tiếng Anh 1, 2, THEORY, ENG]
+    - [COM101, Tin học cơ sở, 2, LAB, CS]
+    - [PRO101, Nhập môn lập trình, 3, LAB, CS]
+    - [MAT101, Toán rời rạc, 3, THEORY, CS]
+    - [SKI101, Kỹ năng học tập, 1, THEORY, POL]
+  2:
+    - [ENG102, Tiếng Anh 2, 2, THEORY, ENG]
+    - [POL101, Triết học Mác - Lênin, 3, THEORY, POL]
+  3:
+    - [ENG103, Tiếng Anh 3, 2, THEORY, ENG]
+    - [POL102, Kinh tế chính trị Mác - Lênin, 2, THEORY, POL]
+  4:
+    - [ENG104, Tiếng Anh 4, 2, THEORY, ENG]
+    - [POL103, Chủ nghĩa xã hội khoa học, 2, THEORY, POL]
+  5:
+    - [POL104, Tư tưởng Hồ Chí Minh, 2, THEORY, POL]
+    - [LAW101, Pháp luật đại cương, 2, THEORY, POL]
+  6:
+    - [POL105, Lịch sử Đảng Cộng sản Việt Nam, 2, THEORY, POL]
+    - [SKI201, Khởi nghiệp, 2, THEORY, POL]
+
+# Môn dùng chung trong một nhóm ngành
+groups:
+  SOFT:
+    department: SWE
+    terms:
+      1:
+        - [SOF101, HTML CSS và JavaScript cơ bản, 4, LAB]
+      2:
+        - [SOF201, Lập trình hướng đối tượng với Java, 3, LAB]
+        - [SOF202, Cấu trúc dữ liệu và giải thuật, 3, LAB]
+        - [SOF203, Cơ sở dữ liệu SQL, 3, LAB]
+      3:
+        - [SOF301, Phân tích và thiết kế hệ thống, 3, THEORY]
+        - [SOF302, Lập trình Java nâng cao, 4, LAB]
+        - [SOF303, Git và quy trình phát triển phần mềm, 3, LAB]
+      4:
+        - [SOF401, Kiểm thử phần mềm cơ bản, 3, LAB]
+        - [SOF402, Lập trình API RESTful, 3, LAB]
+      5:
+        - [SOF501, Quản lý dự án Agile, 3, THEORY]
+        - [SOF502, Kiến trúc phần mềm, 3, THEORY]
+      6:
+        - [SOF601, Đồ án tốt nghiệp phần mềm, 5, LAB]
+  DATA:
+    department: DAI
+    terms:
+      1:
+        - [DAT101, Lập trình Python, 4, LAB]
+      2:
+        - [DAT201, Xác suất thống kê, 3, THEORY]
+        - [DAT202, Đại số tuyến tính, 3, THEORY]
+        - [DAT203, Cơ sở dữ liệu, 3, LAB]
+      3:
+        - [DAT301, Cấu trúc dữ liệu và giải thuật với Python, 3, LAB]
+        - [DAT302, Phân tích dữ liệu với Pandas, 4, LAB]
+        - [DAT303, Trực quan hoá dữ liệu, 3, LAB]
+      4:
+        - [DAT401, Học máy cơ bản, 3, LAB]
+        - [DAT402, Kho dữ liệu và ETL, 3, LAB]
+      5:
+        - [DAT501, Dữ liệu lớn với Spark, 3, LAB]
+        - [DAT502, Đạo đức và quản trị dữ liệu, 3, THEORY]
+      6:
+        - [DAT601, Đồ án tốt nghiệp dữ liệu, 5, LAB]
+  INFRA:
+    department: INF
+    terms:
+      1:
+        - [INF101, Kiến trúc máy tính và hệ điều hành, 4, THEORY]
+      2:
+        - [INF201, Mạng máy tính, 3, LAB]
+        - [INF202, Quản trị Linux, 3, LAB]
+        - [INF203, Lập trình Python cho hệ thống, 3, LAB]
+      3:
+        - [INF301, Định tuyến và chuyển mạch, 3, LAB]
+        - [INF302, Quản trị Windows Server, 4, LAB]
+        - [INF303, Cơ sở an toàn thông tin, 3, THEORY]
+      4:
+        - [INF401, Ảo hoá và container, 3, LAB]
+        - [INF402, Giám sát và vận hành hệ thống, 3, LAB]
+      5:
+        - [INF501, Tự động hoá hạ tầng, 3, LAB]
+        - [INF502, Quản lý dịch vụ CNTT theo ITIL, 3, THEORY]
+      6:
+        - [INF601, Đồ án tốt nghiệp hạ tầng, 5, LAB]
+  DESIGN:
+    department: DES
+    terms:
+      1:
+        - [DES101, Nguyên lý thiết kế, 4, STUDIO]
+      2:
+        - [DES201, Hình hoạ và phác thảo, 3, STUDIO]
+        - [DES202, Đồ hoạ raster với Photoshop, 3, LAB]
+        - [DES203, Lịch sử mỹ thuật và thiết kế, 3, THEORY]
+      3:
+        - [DES301, Đồ hoạ vector với Illustrator, 3, LAB]
+        - [DES302, Nghệ thuật chữ và bố cục, 4, STUDIO]
+        - [DES303, Màu sắc trong thiết kế, 3, STUDIO]
+      4:
+        - [DES401, Thiết kế tương tác, 3, STUDIO]
+        - [DES402, Dựng hình 3D cơ bản, 3, LAB]
+      5:
+        - [DES501, Chuyển động và hoạt hình 2D, 3, LAB]
+        - [DES502, Portfolio cá nhân, 3, STUDIO]
+      6:
+        - [DES601, Đồ án tốt nghiệp thiết kế, 5, STUDIO]
+
+# 12 ngành. Mỗi ngành 8 môn riêng: kỳ 2: 1, kỳ 3: 1, kỳ 4: 2, kỳ 5: 2, kỳ 6: 2
+majors:
+  SE:
+    name: Phát triển phần mềm
+    group: SOFT
+    department: SWE
+    terms:
+      2: [[SE201, Nhập môn kỹ thuật phần mềm, 3, THEORY]]
+      3: [[SE301, Lập trình Spring Boot, 3, LAB]]
+      4: [[SE401, Phát triển ứng dụng doanh nghiệp, 4, LAB], [SE402, Mẫu thiết kế phần mềm, 3, LAB]]
+      5: [[SE501, Kiến trúc microservices, 3, LAB], [SE502, Dự án phần mềm nhóm, 4, LAB]]
+      6: [[SE601, Bảo mật ứng dụng, 3, LAB], [SE602, Chuyên đề công nghệ mới, 3, THEORY]]
+  WEB:
+    name: Lập trình Web
+    group: SOFT
+    department: SWE
+    terms:
+      2: [[WEB201, Thiết kế web responsive, 3, LAB]]
+      3: [[WEB301, JavaScript nâng cao, 3, LAB]]
+      4: [[WEB401, Lập trình ReactJS, 4, LAB], [WEB402, Node.js và Express, 3, LAB]]
+      5: [[WEB501, Lập trình web full-stack, 3, LAB], [WEB502, Dự án website thương mại điện tử, 4, LAB]]
+      6: [[WEB601, Tối ưu hiệu năng web, 3, LAB], [WEB602, SEO và phân tích web, 3, THEORY]]
+  MOB:
+    name: Lập trình Mobile
+    group: SOFT
+    department: SWE
+    terms:
+      2: [[MOB201, Thiết kế giao diện di động, 3, LAB]]
+      3: [[MOB301, Lập trình Android cơ bản, 3, LAB]]
+      4: [[MOB401, Lập trình Android nâng cao, 4, LAB], [MOB402, Lập trình Kotlin, 3, LAB]]
+      5: [[MOB501, Lập trình đa nền tảng với Flutter, 3, LAB], [MOB502, Dự án ứng dụng di động, 4, LAB]]
+      6: [[MOB601, Lập trình iOS với Swift, 3, LAB], [MOB602, Phát hành và vận hành ứng dụng, 3, THEORY]]
+  QA:
+    name: Kiểm thử phần mềm
+    group: SOFT
+    department: SWE
+    terms:
+      2: [[QA201, Nhập môn đảm bảo chất lượng, 3, THEORY]]
+      3: [[QA301, Thiết kế test case, 3, LAB]]
+      4: [[QA401, Kiểm thử tự động với Selenium, 4, LAB], [QA402, Kiểm thử API, 3, LAB]]
+      5: [[QA501, Kiểm thử hiệu năng, 3, LAB], [QA502, Dự án kiểm thử, 4, LAB]]
+      6: [[QA601, Kiểm thử bảo mật, 3, LAB], [QA602, Quy trình chất lượng theo ISTQB, 3, THEORY]]
+  AI:
+    name: Trí tuệ nhân tạo
+    group: DATA
+    department: DAI
+    terms:
+      2: [[AI201, Nhập môn trí tuệ nhân tạo, 3, THEORY]]
+      3: [[AI301, Toán cho học máy, 3, THEORY]]
+      4: [[AI401, Học sâu, 4, LAB], [AI402, Thị giác máy tính, 3, LAB]]
+      5: [[AI501, Xử lý ngôn ngữ tự nhiên, 3, LAB], [AI502, Dự án AI, 4, LAB]]
+      6: [[AI601, Triển khai mô hình và MLOps, 3, LAB], [AI602, AI tạo sinh, 3, LAB]]
+  DA:
+    name: Phân tích dữ liệu
+    group: DATA
+    department: DAI
+    terms:
+      2: [[DA201, Excel cho phân tích, 3, LAB]]
+      3: [[DA301, SQL cho phân tích, 3, LAB]]
+      4: [[DA401, Power BI, 4, LAB], [DA402, Phân tích kinh doanh, 3, THEORY]]
+      5: [[DA501, Thống kê ứng dụng, 3, THEORY], [DA502, Dự án phân tích dữ liệu, 4, LAB]]
+      6: [[DA601, Kể chuyện bằng dữ liệu, 3, THEORY], [DA602, Phân tích dự báo, 3, LAB]]
+  SEC:
+    name: An toàn thông tin
+    group: INFRA
+    department: INF
+    terms:
+      2: [[SEC201, Nhập môn an ninh mạng, 3, THEORY]]
+      3: [[SEC301, Mật mã học ứng dụng, 3, THEORY]]
+      4: [[SEC401, Kiểm thử xâm nhập, 4, LAB], [SEC402, Bảo mật web, 3, LAB]]
+      5: [[SEC501, Điều tra số, 3, LAB], [SEC502, Vận hành SOC, 4, LAB]]
+      6: [[SEC601, Quản trị rủi ro an toàn thông tin, 3, THEORY], [SEC602, Ứng cứu sự cố, 3, LAB]]
+  NET:
+    name: Quản trị mạng
+    group: INFRA
+    department: INF
+    terms:
+      2: [[NET201, Cáp và hạ tầng mạng, 3, LAB]]
+      3: [[NET301, Mạng không dây, 3, LAB]]
+      4: [[NET401, CCNA nâng cao, 4, LAB], [NET402, Dịch vụ mạng, 3, LAB]]
+      5: [[NET501, Thiết kế mạng doanh nghiệp, 3, THEORY], [NET502, Dự án hạ tầng mạng, 4, LAB]]
+      6: [[NET601, Mạng định nghĩa bằng phần mềm, 3, LAB], [NET602, Bảo mật mạng, 3, LAB]]
+  CLD:
+    name: Điện toán đám mây và DevOps
+    group: INFRA
+    department: INF
+    terms:
+      2: [[CLD201, Nhập môn điện toán đám mây, 3, THEORY]]
+      3: [[CLD301, AWS cơ bản, 3, LAB]]
+      4: [[CLD401, Kubernetes, 4, LAB], [CLD402, CI/CD, 3, LAB]]
+      5: [[CLD501, Hạ tầng dưới dạng mã với Terraform, 3, LAB], [CLD502, Dự án DevOps, 4, LAB]]
+      6: [[CLD601, Kiến trúc đám mây, 3, THEORY], [CLD602, Bảo mật đám mây, 3, LAB]]
+  IOT:
+    name: Hệ thống nhúng và IoT
+    group: INFRA
+    department: INF
+    terms:
+      2: [[IOT201, Điện tử số, 3, LAB]]
+      3: [[IOT301, Lập trình vi điều khiển, 3, LAB]]
+      4: [[IOT401, Hệ thống nhúng, 4, LAB], [IOT402, Cảm biến và giao tiếp, 3, LAB]]
+      5: [[IOT501, Nền tảng IoT, 3, LAB], [IOT502, Dự án IoT, 4, LAB]]
+      6: [[IOT601, Edge computing, 3, LAB], [IOT602, Bảo mật IoT, 3, THEORY]]
+  UX:
+    name: Thiết kế UI/UX
+    group: DESIGN
+    department: DES
+    terms:
+      2: [[UX201, Nhập môn trải nghiệm người dùng, 3, THEORY]]
+      3: [[UX301, Nghiên cứu người dùng, 3, STUDIO]]
+      4: [[UX401, Thiết kế UI với Figma, 4, LAB], [UX402, Wireframe và prototype, 3, STUDIO]]
+      5: [[UX501, Design system, 3, LAB], [UX502, Dự án UX/UI, 4, STUDIO]]
+      6: [[UX601, Kiểm thử khả dụng, 3, STUDIO], [UX602, Thiết kế đa nền tảng, 3, LAB]]
+  GAME:
+    name: Phát triển Game
+    group: DESIGN
+    department: SWE
+    terms:
+      2: [[GAME201, Nhập môn phát triển game, 3, THEORY]]
+      3: [[GAME301, Lập trình C#, 3, LAB]]
+      4: [[GAME401, Unity cơ bản, 4, LAB], [GAME402, Thiết kế gameplay, 3, STUDIO]]
+      5: [[GAME501, Unity nâng cao, 3, LAB], [GAME502, Dự án game, 4, LAB]]
+      6: [[GAME601, Game nhiều người chơi, 3, LAB], [GAME602, Phát hành game, 3, THEORY]]
