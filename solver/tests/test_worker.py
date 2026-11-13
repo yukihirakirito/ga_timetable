@@ -50,7 +50,10 @@ def dsn():
 @pytest.fixture
 def conn(dsn):
     with psycopg.connect(dsn, autocommit=True) as c:
-        c.execute("TRUNCATE schedule_runs RESTART IDENTITY CASCADE")
+        # Không dùng TRUNCATE ... CASCADE: semesters có FK published_run_id -> schedule_runs nên
+        # CASCADE sẽ xoá luôn semesters (và course_sections...). DELETE chỉ cascade xuống bảng kết quả.
+        c.execute("DELETE FROM schedule_runs")
+        c.execute("ALTER TABLE schedule_runs ALTER COLUMN id RESTART")
         yield c
 
 
@@ -105,13 +108,15 @@ def test_job_done_and_results_written(conn, dsn):
     n_cal = count(conn, "calendar_sessions", run_id)
     if r["hard_violations"] == 0:
         assert n_cal == int(p.sec_total_sessions.sum())
-    # Tổng tiết mỗi lớp-môn trong lịch thật bằng 15 x TC
-    bad = conn.execute("""SELECT count(*) FROM (
-                            SELECT cs.section_id FROM calendar_sessions c
-                            JOIN course_sections cs ON cs.id = c.section_id
-                            WHERE c.run_id = %s GROUP BY cs.section_id, cs.subject_id) t""",
-                       (run_id,)).fetchone()[0]
-    assert bad == p.n_sections
+        # Không thiếu buổi (H9) thì tổng tiết mỗi lớp-môn trong lịch thật bằng đúng 15 x TC
+        rows = conn.execute("""SELECT c.section_id, sum(c.length) AS periods, max(sj.credits) * 15 AS expected
+                                 FROM calendar_sessions c
+                                 JOIN course_sections cs ON cs.id = c.section_id
+                                 JOIN subjects sj ON sj.id = cs.subject_id
+                                WHERE c.run_id = %s
+                                GROUP BY c.section_id""", (run_id,)).fetchall()
+        assert len(rows) == p.n_sections
+        assert all(periods == expected for _, periods, expected in rows)
     soft_rows = conn.execute("SELECT count(*) FROM run_violations WHERE run_id = %s AND severity = 'SOFT'",
                              (run_id,)).fetchone()[0]
     assert soft_rows > 0

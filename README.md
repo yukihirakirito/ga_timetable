@@ -19,3 +19,13 @@ docker compose up -d db
 docker compose run --rm migrate up
 docker compose exec -T db psql -U timetable -d timetable -v ON_ERROR_STOP=1 < db/seeds/large.sql
 ```
+
+## Chạy solver như worker
+
+```bash
+cd solver && uv sync
+uv run solver enqueue ../db/seeds/large.snapshot.json --params '{"ga":{"generations":150}}'
+uv run solver worker --once
+```
+
+Chi tiết: [solver/README.md](solver/README.md).

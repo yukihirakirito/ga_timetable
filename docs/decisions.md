@@ -189,6 +189,22 @@ Cài đặt ở `solver/src/solver/calendar.py`, mất vài ms cho bộ `large`.
 - **Hợp đồng** (`contracts/`): JSON Schema của `input_snapshot` (v1.0) + `validate.py` kiểm tra chéo.
   Go tính sẵn giá trị suy ra từ tín chỉ; Python không tính lại.
 - **PostgreSQL**: vừa là DB vừa là hàng đợi (`SELECT … FOR UPDATE SKIP LOCKED`, `heartbeat_at` cho worker chết).
+  Không cần Redis/RabbitMQ. Vòng đời một run (`solver/src/solver/worker.py`):
+  - `PENDING → RUNNING`: worker nhận job bằng một câu `UPDATE … WHERE id = (SELECT … FOR UPDATE SKIP LOCKED LIMIT 1)`,
+    ghi `worker_id`, `started_at`, `heartbeat_at`. Nhiều worker song song không lấy trùng job.
+  - Heartbeat: luồng riêng (kết nối riêng) cập nhật `heartbeat_at` mỗi 10 s. Lần cập nhật nào không còn thấy
+    `RUNNING` của mình thì báo GA dừng ở thế hệ kế tiếp (hook `should_stop`).
+  - `RUNNING → DONE`: ghi `section_assignments`, `template_sessions`, `calendar_sessions` (COPY), `run_violations`
+    và cập nhật `schedule_runs` trong **một** transaction. Worker không đụng tới `published_run_id`.
+  - `RUNNING → CANCELLED`: admin đổi status; worker dừng, ghi `finished_at`, không ghi kết quả.
+  - `RUNNING → FAILED`: snapshot / params lỗi, exception, worker bị tắt (SIGTERM / Ctrl+C), hoặc **job mồ côi**
+    (heartbeat quá 60 s, worker nào cũng dọn ở mỗi vòng lặp). Job mồ côi **không** tự chạy lại: một job làm worker
+    crash sẽ không lặp vô hạn; admin tạo run mới nếu muốn (nên không cần cột `attempts`).
+  - Mọi UPDATE trạng thái đều kèm `status = 'RUNNING' AND worker_id = <mình>`, nên worker không ghi đè job đã bị huỷ
+    hoặc bị đánh FAILED; transaction ghi kết quả bị rollback trong trường hợp đó.
+  - `params` của run theo `contracts/run_params.schema.json`; thiếu thì lấy mặc định, key lạ thì FAILED.
+  - Đo trên bộ `large`, 150 thế hệ: 92 s, 0 vi phạm cứng, ghi 5 805 buổi lịch thật; kiểm tra chéo bằng SQL
+    không có trùng phòng / trùng giảng viên, mọi lớp-môn đủ 15 × TC tiết.
 - Một học kỳ có nhiều run; `semesters.published_run_id` trỏ tới lịch được công bố.
 - Tiến độ GA ghi vào `run_progress`, Go đẩy lên giao diện bằng SSE.
 - Schema: `db/migrations/` (golang-migrate, SQL thuần). ERD: 21 bảng (11 + 4 + 6), chia 4 nhóm:

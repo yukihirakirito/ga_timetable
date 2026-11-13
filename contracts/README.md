@@ -9,6 +9,7 @@ Python chỉ đọc snapshot, không truy vấn các bảng danh mục.
 | `input_snapshot.schema.json` | JSON Schema (draft 2020-12): cấu trúc, kiểu, miền giá trị |
 | `validate.py` | Kiểm tra schema + ràng buộc chéo mà JSON Schema không diễn đạt được |
 | `examples/input_snapshot.tiny.json` | Ví dụ nhỏ: 2 lớp, 3 môn, 6 lớp-môn |
+| `run_params.schema.json` | JSON Schema của `schedule_runs.params` (tham số GA + trọng số ràng buộc mềm) |
 
 ```bash
 python3 contracts/validate.py contracts/examples/input_snapshot.tiny.json
