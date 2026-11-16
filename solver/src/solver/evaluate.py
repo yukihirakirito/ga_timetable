@@ -11,6 +11,10 @@ Ràng buộc cứng
     H6  hai buổi của một lớp-môn cùng ngày   số buổi thừa trong cùng ngày
     H7, H8 không thể vi phạm: gen chỉ lấy giá trị trong miền (schedule.domain_errors)
     H9  kiểm tra ở giai đoạn 2 (lịch thật)
+    H10 sinh viên học 2 buổi chồng tiết      theo nhóm sinh viên học thêm g (lớp c + lớp-môn học thêm), mỗi ô:
+                                             (k_lớp + k_thêm - 1)⁺ - (k_lớp - 1)⁺, tức chỉ phần trùng có dính
+                                             lớp-môn học thêm (phần trùng trong lớp đã tính ở H1).
+                                             Không nhân số sinh viên của nhóm.
 
 Ràng buộc mềm
     S1  lịch lớp không gọn                   tiết trống kẹp giữa các buổi trong ca + số ngày phải lên trường
@@ -33,7 +37,7 @@ from .problem import Problem
 from .rooms import NO_ROOM, assign_rooms
 from .schedule import Schedule
 
-HARD_CODES = ("H1", "H2", "H3", "H4", "H5", "H6")
+HARD_CODES = ("H1", "H2", "H3", "H4", "H5", "H6", "H10")
 SOFT_CODES = ("S1", "S2", "S4", "S5", "S6", "S7", "S8")
 
 
@@ -74,6 +78,19 @@ def _over(counts: np.ndarray) -> int:
     return int(np.clip(counts - 1, 0, None).sum())
 
 
+def extra_counts(problem: Problem, start: np.ndarray) -> np.ndarray:
+    """extra_cnt[g, ô] = số buổi học thêm của nhóm g chiếm ô."""
+    p, nc = problem, problem.n_cells
+    cell = start[p.gx_event] + p.gx_offset
+    return np.bincount(p.gx_group * nc + cell, minlength=p.n_groups * nc).reshape(p.n_groups, nc)
+
+
+def h10(class_cnt_of_group: np.ndarray, extra_cnt: np.ndarray) -> int:
+    """Σ (k_lớp + k_thêm - 1)⁺ - (k_lớp - 1)⁺ trên mọi (nhóm, ô)."""
+    total = np.clip(class_cnt_of_group + extra_cnt - 1, 0, None) - np.clip(class_cnt_of_group - 1, 0, None)
+    return int(total.sum())
+
+
 def evaluate(problem: Problem, schedule: Schedule, weights: Weights | None = None) -> Evaluation:
     w = weights or Weights()
     p = problem
@@ -102,6 +119,7 @@ def evaluate(problem: Problem, schedule: Schedule, weights: Weights | None = Non
                    | (p.room_cap[room[has_room]] < p.ev_size[has_room])).sum()),
         "H5": int(p.unavailable[cell_lect, cell].sum()),
         "H6": _over(sec_day),
+        "H10": h10(class_cnt[p.group_class], extra_counts(p, start)),
     }
 
     # --- Mềm ------------------------------------------------------------------------
@@ -187,6 +205,20 @@ def violations(problem: Problem, schedule: Schedule, evaluation: Evaluation) -> 
         days = day[evs]
         if len(set(days.tolist())) < len(days):
             hard("H6", sessions=[ev_info(int(e)) for e in evs])
+
+    # H10: mỗi cặp buổi chồng tiết của một nhóm sinh viên, trong đó ít nhất một buổi là học thêm
+    for g in range(p.n_groups):
+        extra = [int(e) for s in p.group_extra[g].tolist() for e in p.sec_events[s]]
+        own = np.flatnonzero(p.ev_class == p.group_class[g]).tolist()
+        pairs = [(a, b) for i, a in enumerate(extra) for b in own + extra[i + 1:]]
+        for a, b in pairs:
+            if day[a] != day[b]:
+                continue
+            overlap = int(min(start[a] + p.ev_len[a], start[b] + p.ev_len[b]) - max(start[a], start[b]))
+            if overlap > 0:
+                hard("H10", group={"class": p.class_codes[p.group_class[g]], "students": int(p.group_students[g]),
+                                   "extra_section_ids": [int(p.sec_ids[x]) for x in p.group_extra[g]]},
+                     periods=overlap, sessions=[ev_info(a), ev_info(b)])
 
     for code in SOFT_CODES:
         if evaluation.soft[code]:

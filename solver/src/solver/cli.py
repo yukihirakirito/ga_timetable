@@ -35,6 +35,7 @@ DAY_NAMES = ["Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7"]
 LABELS = {
     "H1": "Lớp trùng tiết", "H2": "Giảng viên trùng tiết", "H3": "Không còn phòng",
     "H4": "Phòng sai loại/thiếu chỗ", "H5": "Dạy giờ bận", "H6": "Hai buổi cùng ngày",
+    "H10": "Sinh viên trùng tiết",
     "S1": "Lịch lớp không gọn", "S2": "Buổi môn ở ngày liền kề",
     "S4": "Ngày GV lên trường", "S5": "Bỏ trống giờ ưu tiên", "S6": "Lệch tải GV",
     "S7": "Lớp-môn đổi phòng", "S8": "Vượt tải tối đa",

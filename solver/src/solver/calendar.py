@@ -9,12 +9,15 @@
      Buổi cuối dài `total_periods - (total_sessions - 1) * periods_per_session` tiết.
   2. **Học bù.** Nếu tới hết tuần học cuối (study_weeks) vẫn chưa đủ buổi, tìm chỗ bù cho phần thiếu:
      ngày học không phải ngày lễ, trong các tuần học, lớp-môn chưa có buổi trong ngày đó (như H6),
-     lớp và giảng viên rảnh, giảng viên không bận (H5), còn phòng phù hợp rảnh, buổi nằm trọn trong ca (H8).
+     lớp và giảng viên rảnh, giảng viên không bận (H5), còn phòng phù hợp rảnh, buổi nằm trọn trong ca (H8),
+     sinh viên học thêm rảnh (H10): không trùng buổi học thêm của nhóm thuộc lớp này, và nếu lớp-môn là
+     lớp-môn học thêm của nhóm nào thì không trùng lịch lớp lẫn buổi học thêm khác của nhóm đó.
      Ưu tiên ngày sớm nhất, cùng tiết bắt đầu và cùng phòng như tuần mẫu. Lớp-môn có ít chỗ bù nhất
      được xếp trước (cùng ý tưởng DSatur). Tham lam, không quay lui.
   3. **H9.** Lớp-môn vẫn thiếu buổi sau khi bù là vi phạm H9.
 
-Mọi kiểm tra rảnh/bận dùng bitmask 12 bit cho mỗi (ngày học, lớp / giảng viên / phòng).
+Mọi kiểm tra rảnh/bận dùng bitmask 12 bit cho mỗi (ngày học, lớp / giảng viên / phòng / nhóm sinh viên).
+Lùi buổi vì ngày lễ không cần kiểm tra H10: mọi tuần đều chép từ tuần mẫu.
 """
 
 from __future__ import annotations
@@ -75,7 +78,10 @@ def expand_calendar(problem: Problem, schedule: Schedule, room: np.ndarray,
     class_busy = [[0] * p.n_classes for _ in range(n_dates)]
     lect_busy = [[0] * p.n_lecturers for _ in range(n_dates)]
     room_busy = [[0] * p.n_rooms for _ in range(n_dates)]
+    extra_busy = [[0] * p.n_groups for _ in range(n_dates)]   # buổi học thêm của nhóm sinh viên (H10)
     sec_dates: list[set[int]] = [set() for _ in range(p.n_sections)]
+    class_groups = [g.tolist() for g in p.class_groups]
+    sec_extra_groups = [g.tolist() for g in p.sec_extra_groups]
 
     result = CalendarResult(sessions=[])
     counts = [0] * p.n_sections
@@ -92,6 +98,8 @@ def expand_calendar(problem: Problem, schedule: Schedule, room: np.ndarray,
         lect_busy[di][lec] |= m
         if r != NO_ROOM:
             room_busy[di][r] |= m
+        for g in sec_extra_groups[s]:
+            extra_busy[di][g] |= m
         sec_dates[s].add(di)
         counts[s] += 1
         result.sessions.append(Session(s, counts[s], dates[di], first + 1, length, r, lec, makeup))
@@ -134,6 +142,10 @@ def expand_calendar(problem: Problem, schedule: Schedule, room: np.ndarray,
                     m = _bit(f, length)
                     cells = slice(day * p.n_periods + f, day * p.n_periods + f + length)
                     if class_busy[di][c] & m or lect_busy[di][lec] & m or p.unavailable[lec, cells].any():
+                        continue
+                    if any(extra_busy[di][g] & m for g in class_groups[c]) or any(
+                            (class_busy[di][int(p.group_class[g])] | extra_busy[di][g]) & m
+                            for g in sec_extra_groups[s]):
                         continue
                     free = [r for r in rooms if not room_busy[di][r] & m]
                     if not free:

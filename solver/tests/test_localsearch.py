@@ -11,7 +11,7 @@ from solver.problem import load_snapshot
 from solver.schedule import domain_errors, random_schedule
 
 SEEDS = Path(__file__).resolve().parents[2] / "db" / "seeds"
-COUNTERS = ["class_cnt", "lect_cnt", "grp_cnt", "sec_day", "class_day", "lect_day", "load"]
+COUNTERS = ["class_cnt", "lect_cnt", "grp_cnt", "gx_cnt", "sec_day", "class_day", "lect_day", "load"]
 
 
 @pytest.fixture(scope="module")

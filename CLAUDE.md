@@ -43,8 +43,8 @@ Bàn giao ngữ cảnh cho mọi phiên Claude Code làm việc trên repo này.
 | M6 | Thực nghiệm: so sánh với tìm kiếm cục bộ lặp nhiều lần trong cùng thời gian, ablation, đường hội tụ, biểu đồ | ⏸ **Hoãn** theo quyết định của chủ repo |
 | M7 | `worker.py` + `params.py`: hàng đợi Postgres (SKIP LOCKED), heartbeat, huỷ, job mồ côi → FAILED, ghi kết quả trong 1 transaction | ✅ |
 | M8a | Sinh viên thật: đặc tả H10, migration `000004` (`students`, `extra_enrollments`, bỏ `student_classes.size`), bộ sinh dữ liệu (5% SV học lại), snapshot **2.0** (`sections[].size`, `student_groups`) + `validate.py`, `problem.py` nạp nhóm (`group_class`, `group_extra`, `group_students`) | ✅ |
-| **M8b** | Solver hỗ trợ nhóm sinh viên: một buổi thuộc nhiều nhóm; H10 trong `evaluate` + `violations()`, delta `Workspace`, DSatur, học bù (`calendar`), lai ghép theo khối lớp. Đo lại `large` | ⏳ **Tiếp theo**. ⚠️ Trước khi xong M8b, solver nạp nhóm nhưng **chưa phạt H10**: lịch có thể trùng giờ với SV học lại |
-| G1 | Go: khung project (go.mod, main.go, config, pgxpool, sqlc, layout + htmx + Tailwind, middleware, test với `timetable_gotest`) | ⏳ |
+| M8b | Solver hỗ trợ H10: `evaluate` + `violations()`, delta `Workspace.gx_cnt`, DSatur, học bù, bước đi ngẫu nhiên trong min-conflicts (`walk_prob=0.5`). Mọi lịch GA 0 vi phạm cứng kể cả H10; SQL độc lập: 0 SV trùng lịch | ✅ |
+| **G1** | Go: khung project (go.mod, main.go, config, pgxpool, sqlc, layout + htmx + Tailwind, middleware, test với `timetable_gotest`) | ⏳ **Tiếp theo** |
 | G2 | Go: tạo snapshot 2.0 từ DB + kiểm tra (JSON Schema + kiểm tra ngữ nghĩa như `validate.py`). Xong khi khớp `db/seeds/large.snapshot.json` | ⏳ |
 | G3 | Go: tạo run (params theo `run_params.schema.json`), trang tiến độ SSE + Chart.js, huỷ run | ⏳ |
 | G4 | Go: CRUD danh mục, gồm sinh viên và học thêm; đổi lỗi DB thành thông báo dễ hiểu | ⏳ |
@@ -52,18 +52,19 @@ Bàn giao ngữ cảnh cho mọi phiên Claude Code làm việc trên repo này.
 | G6 | Go: **xem lịch** (mốc cuối, quan trọng nhất): 4 màn hình + kiểm tra trùng lịch lớp/SV/GV/phòng, công bố run. Xem [docs/decisions.md](docs/decisions.md) §8 | ⏳ |
 | G7 | Đóng gói (tuỳ chọn): Dockerfile, compose cả hệ thống, GitHub Actions, README có ảnh | ⏳ |
 
-Test: **100 passed** (`cd solver && uv run pytest`). Trong đó 11 test worker cần Postgres, không có thì tự skip.
+Test: **112 passed** (`cd solver && uv run pytest`). Trong đó 11 test worker cần Postgres, không có thì tự skip.
 
-Kết quả đã đo (phạt mềm, càng nhỏ càng tốt; mọi lịch GA đều 0 vi phạm cứng):
+Kết quả đã đo, dữ liệu có 5% sinh viên học lại (phạt mềm, càng nhỏ càng tốt; mọi lịch GA đều 0 vi phạm cứng kể cả H10;
+chi tiết và số trước khi có sinh viên ở [docs/decisions.md](docs/decisions.md) §6):
 
-| Bộ | DSatur (10 seed) | GA 100 thế hệ (3 seed) |
-|---|---|---|
-| small | 227 ± 24 | 137 ± 3 (−37%) |
-| medium | 725 ± 12 | 490 ± 7 (−32%) |
-| large | 1303 ± 40 | 994 ± 9 (−22%) |
+| Bộ | DSatur (10 seed): hợp lệ, mềm | GA 100 thế hệ (3 seed) | Thời gian GA | Bỏ qua H10 thì trùng |
+|---|---|---|---|---|
+| small | 10/10, 237 ± 15 | 141 ± 3 | 50 s | 64 tiết |
+| medium | 8/10, 742 ± 33 | 535 ± 3 | 62 s | 278 tiết |
+| large | 2/10, 1330 ± 36 | 1060 ± 13 | 82 s | 453 tiết |
 
-Worker trên `large`, 150 thế hệ: 92 s, 0 vi phạm cứng, 5 805 buổi lịch thật. GA không có tìm kiếm cục bộ thì thất bại
-(394 vi phạm cứng trên `large`).
+Worker trên `large`, 150 thế hệ: 116 s, 0 vi phạm cứng, 5 805 buổi lịch thật, SQL độc lập: 0 sinh viên trùng lịch.
+GA không có tìm kiếm cục bộ thì thất bại. Min-conflicts cần bước đi ngẫu nhiên (`walk_prob`) để thoát kẹt do H10.
 
 Việc còn để ngỏ:
 - Công nghệ Go đã chốt (chi tiết [docs/decisions.md](docs/decisions.md) §8): `html/template` + htmx, Tailwind

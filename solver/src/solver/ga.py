@@ -115,7 +115,12 @@ class GA:
         return min((pop[i] for i in idx), key=lambda ind: ind.fitness)
 
     def crossover(self, a: Schedule, b: Schedule) -> Schedule:
-        """Lai ghép theo khối lớp: mỗi lớp lấy nguyên lịch + giảng viên từ một trong hai bố mẹ."""
+        """Lai ghép theo khối lớp: mỗi lớp lấy nguyên lịch + giảng viên từ một trong hai bố mẹ.
+
+        Sinh viên học lại nối lớp này với lớp khác (H10), nên ghép hai lớp từ hai bố mẹ khác nhau có thể sinh trùng
+        lịch sinh viên; min-conflicts trong _finish sửa phần đó. Không gom các lớp bị nối thành một khối: trên dữ liệu
+        mẫu gần như mọi lớp dính vào cùng một khối (large: 73/76 lớp), lai ghép theo khối khi đó không còn tác dụng.
+        """
         from_b = self.rng.random(self.p.n_classes) < 0.5
         ev_mask, sec_mask = from_b[self.p.ev_class], from_b[self.p.sec_class]
         return Schedule(np.where(sec_mask, b.lecturer, a.lecturer), np.where(ev_mask, b.start, a.start))

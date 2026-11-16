@@ -71,7 +71,7 @@ Hệ quả đã chấp nhận: lịch dồn về nửa đầu kỳ.
 | H7 | Giảng viên đúng chuyên môn (đảm bảo bằng miền giá trị của gen) |
 | H8 | Buổi học nằm trọn trong một ca, không vắt qua giờ nghỉ trưa |
 | H9 | Lớp-môn học đủ số buổi trước hết tuần 15 (tính cả học bù) |
-| H10 | Một sinh viên không học 2 buổi chồng tiết (gồm cả lớp-môn học thêm). *Chốt 2026-11-16, cài ở M8* |
+| H10 | Một sinh viên không học 2 buổi chồng tiết (gồm cả lớp-môn học thêm). *Chốt 2026-11-16, cài ở M8b* |
 
 **Mềm** (có trọng số)
 
@@ -157,6 +157,37 @@ Phạt cứng 10 000 do người dùng chốt; nếu tổng phạt mềm của m
 
   GA phải cho phạt mềm thấp hơn các con số này (vi phạm cứng đã về 0 ngay từ baseline).
 - Tiền kiểm tra khả thi trước khi chạy (cận dưới về phòng, lớp, giảng viên).
+
+**Sinh viên học thêm (H10, M8b)**
+
+- Mỗi buổi thuộc một lớp và có thể thuộc thêm các **nhóm sinh viên** (nhóm g = lớp `group_class[g]` + lớp-môn học thêm).
+  Tính sẵn trong `Problem`: `class_groups[c]`, `sec_extra_groups[s]`, `sec_linked[s]` (lớp-môn của lớp khác bị nối qua H10).
+- `evaluate`: mảng `extra_cnt[nhóm, ô]` + công thức `(k_lớp + k_thêm − 1)⁺ − (k_lớp − 1)⁺`, vector hoá, 124 nhóm × 72 ô.
+- Delta (`Workspace.gx_cnt`): dời buổi chỉ cập nhật nhóm liên quan; phần H10 trong chi phí dời buổi bằng **đúng** mức thay
+  đổi H10 của `evaluate()` (có test so khớp). DSatur chặn thêm ô nhóm bận; học bù kiểm tra nhóm rảnh.
+- **Bước đi ngẫu nhiên trong min-conflicts** (`repair(walk_prob=0.5)`): H10 nối nhiều lớp, sinh nhiều cực tiểu địa phương
+  mà không buổi nào dời một mình được (đã kiểm tra: buổi kẹt không có vị trí nào 0 vi phạm). Khi buổi xung đột không có chỗ
+  tốt hơn, với xác suất 0,5 vẫn ép dời sang vị trí tốt nhất khác chỗ cũ (kiểu WalkSAT). Từ lịch ngẫu nhiên `large`,
+  5000 bước: không có bước này 0/10 lịch về 0 vi phạm cứng; 0,2 → 7/10; 0,3 → 8/10; 0,5 → 9/10. "Dời ngang" (chỉ dời khi
+  chi phí bằng) không giúp được gì.
+- Lai ghép vẫn **theo lớp**: các lớp bị nối qua sinh viên học lại gần như là một khối duy nhất (large: 73/76 lớp, medium:
+  40/40), lai ghép theo khối khi đó vô nghĩa. Trùng H10 do lai ghép sinh ra được min-conflicts sửa.
+- S1 (lịch gọn) vẫn chỉ tính theo lớp, không tính cho nhóm học lại.
+- Tối ưu sau khi profile: thay `np.logical_or.at` (ufunc.at rất chậm) bằng `np.bincount`; gộp (nhóm, ô) theo lớp bằng
+  bincount trên chỉ số phẳng (nhân ma trận số nguyên của NumPy không dùng BLAS, chậm hơn); DSatur tính mặt nạ "sinh viên bận"
+  một lần cho mọi giảng viên ứng viên. GA `large` 10 thế hệ: 39,9 s → 33,3 s (profile), kết quả không đổi.
+- Kết quả (cùng thiết lập với M4/M3; dữ liệu có 5% sinh viên học lại):
+
+  | Bộ | Bỏ qua H10 thì trùng (DSatur / GA 30 thế hệ) | DSatur hợp lệ | DSatur mềm | GA 100 thế hệ mềm (3 seed) | so với trước M8b | Thời gian GA |
+  |---|---|---|---|---|---|---|
+  | small | 64 / 42 tiết | 10/10 | 237 ± 15 | **141 ± 3** | +3% (137) | 50 s (43 s) |
+  | medium | 278 / 292 tiết | 8/10 | 742 ± 33 | **535 ± 3** | +9% (490) | 62 s (48 s) |
+  | large | 453 / 461 tiết | 2/10 | 1 330 ± 36 | **1 060 ± 13** | +7% (994) | 82 s (65 s) |
+
+  Mọi lịch GA: **0 vi phạm cứng, tính cả H10**. DSatur tham lam không quay lui nên trên `large` thường kẹt 1–5 vi phạm;
+  GA (khởi tạo từ DSatur + min-conflicts) sửa hết. Phạt mềm tăng 3–9% vì ràng buộc chặt hơn.
+  Worker trên `large` (150 thế hệ): DONE, 0 vi phạm cứng; kiểm tra độc lập bằng SQL (dựng lịch từng sinh viên từ
+  `students` + `extra_enrollments`): **0 cặp trùng trên 191 410 buổi-sinh viên**.
 
 **Giai đoạn 2: trải ra lịch thật**
 

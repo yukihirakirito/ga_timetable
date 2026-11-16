@@ -6,7 +6,8 @@ vì đỉnh đó dễ hết lựa chọn nhất nếu để sau. Ở đây:
     đỉnh   = một buổi học (event)
     màu    = (giảng viên, ô bắt đầu); khi lớp-môn đã có giảng viên thì chỉ còn chọn ô bắt đầu
     hợp lệ = không trùng lớp (H1), không trùng giảng viên (H2), không vào giờ bận (H5),
-             không cùng ngày với buổi khác của lớp-môn (H6); vị trí bắt đầu đã đúng ca (H8)
+             không cùng ngày với buổi khác của lớp-môn (H6), không trùng lịch sinh viên học thêm (H10);
+             vị trí bắt đầu đã đúng ca (H8)
 
 Mỗi bước:
   1. chọn buổi chưa xếp có ít lựa chọn hợp lệ nhất (hoà thì ưu tiên buổi dài hơn);
@@ -30,6 +31,7 @@ class _State:
     def __init__(self, p: Problem):
         self.p = p
         self.class_busy = np.zeros((p.n_classes, p.n_cells), dtype=bool)
+        self.extra_busy = np.zeros((p.n_groups, p.n_cells), dtype=bool)   # ô có buổi học thêm của nhóm (H10)
         self.lect_busy = np.zeros((p.n_lecturers, p.n_cells), dtype=bool)
         self.room_busy = np.zeros((p.n_rooms, p.n_cells), dtype=bool)
         self.sec_days = np.zeros((p.n_sections, p.n_days), dtype=bool)
@@ -63,17 +65,42 @@ class _State:
         l = self.sec_lect[s]
         return np.array([l]) if l >= 0 else self.p.sec_candidates[s]
 
-    def feasible(self, e: int, l: int) -> np.ndarray:
-        """Mặt nạ trên starts_by_len[L]: vị trí không vi phạm H1, H2, H5, H6 nếu giảng viên l dạy buổi e."""
+    def group_busy(self, e: int) -> np.ndarray:
+        """Mặt nạ (ô) bận theo H10 của buổi e: buổi học thêm của các nhóm thuộc lớp e, và nếu e là buổi học
+        thêm thì cả lịch lớp lẫn buổi học thêm khác của các nhóm đó."""
         p = self.p
-        L, s, c = int(p.ev_len[e]), int(p.ev_section[e]), int(p.ev_class[e])
+        s, c = int(self.p.ev_section[e]), int(self.p.ev_class[e])
+        busy = np.zeros(p.n_cells, dtype=bool)
+        gs = p.class_groups[c]
+        if len(gs):
+            busy |= self.extra_busy[gs].any(0)
+        gs = p.sec_extra_groups[s]
+        if len(gs):
+            busy |= self.class_busy[p.group_class[gs]].any(0) | self.extra_busy[gs].any(0)
+        return busy
+
+    def students_blocked(self, e: int) -> np.ndarray:
+        """Mặt nạ trên starts_by_len[L]: vị trí trùng lịch lớp (H1) hoặc lịch sinh viên học thêm (H10).
+        Không phụ thuộc giảng viên, nên tính một lần cho mọi giảng viên ứng viên."""
+        p = self.p
+        c = int(p.ev_class[e])
+        busy = self.class_busy[c] | self.group_busy(e)
+        return busy[self.win[int(p.ev_len[e])]].any(1)
+
+    def feasible(self, e: int, l: int, students_blocked: np.ndarray | None = None) -> np.ndarray:
+        """Mặt nạ trên starts_by_len[L]: vị trí không vi phạm H1, H2, H5, H6, H10 nếu giảng viên l dạy buổi e."""
+        p = self.p
+        L, s = int(p.ev_len[e]), int(p.ev_section[e])
         w = self.win[L]
-        blocked = self.class_busy[c][w].any(1) | self.lect_busy[l][w].any(1) | p.unavailable[l][w].any(1)
+        if students_blocked is None:
+            students_blocked = self.students_blocked(e)
+        blocked = students_blocked | self.lect_busy[l][w].any(1) | p.unavailable[l][w].any(1)
         return ~blocked & ~self.sec_days[s][self.start_day[L]]
 
     def n_options(self, e: int, room_aware: bool) -> int:
         room_ok = self.room_free(e) if room_aware else True
-        return int(sum((self.feasible(e, int(l)) & room_ok).sum()
+        sb = self.students_blocked(e)
+        return int(sum((self.feasible(e, int(l), sb) & room_ok).sum()
                        for l in self.lecturers_of(int(self.p.ev_section[e]))))
 
     def room_free(self, e: int) -> np.ndarray:
@@ -119,6 +146,7 @@ class _State:
         L, s, c = int(p.ev_len[e]), int(p.ev_section[e]), int(p.ev_class[e])
         w = self.win[L]
         return (self.class_busy[c][w].sum(1) + self.lect_busy[l][w].sum(1) + p.unavailable[l][w].sum(1)
+                + self.group_busy(e)[w].sum(1)
                 + self.sec_days[s][self.start_day[L]] + ~self.room_free(e))
 
     def place(self, e: int, l: int, st: int) -> int:
@@ -132,6 +160,9 @@ class _State:
             self.lect_load[l] += p.sec_weekly[s]
         self.start[e] = st
         self.class_busy[c, cells] = True
+        gs = p.sec_extra_groups[s]
+        if len(gs):
+            self.extra_busy[np.ix_(gs, cells)] = True
         self.lect_busy[l, cells] = True
         self.sec_days[s, day] = True
         self.class_days[c, day] = True
@@ -164,9 +195,10 @@ def dsatur(problem: Problem, rng: np.random.Generator | None = None, room_aware:
 
         best = None  # (chi phí, giảng viên, ô bắt đầu)
         room_ok = st.room_free(e)
+        sb = st.students_blocked(e)
         for l in st.lecturers_of(s):
             l = int(l)
-            ok = st.feasible(e, l) & room_ok
+            ok = st.feasible(e, l, sb) & room_ok
             if ok.any():
                 cost = np.where(ok, st.soft_cost(e, l), np.inf) + rng.random(len(starts)) * 1e-6
                 i = int(np.argmin(cost))
@@ -184,8 +216,11 @@ def dsatur(problem: Problem, rng: np.random.Generator | None = None, room_aware:
         r = st.place(e, l, start)
         placed[e] = True
 
-        # Cập nhật số lựa chọn của các buổi bị ảnh hưởng: cùng lớp, có thể dùng giảng viên l, có thể dùng phòng r
+        # Cập nhật số lựa chọn của các buổi bị ảnh hưởng: cùng lớp, nối qua nhóm sinh viên (H10),
+        # có thể dùng giảng viên l, có thể dùng phòng r
         affected = set(np.flatnonzero(p.ev_class == p.ev_class[e]).tolist())
+        for s2 in p.sec_linked[s].tolist():
+            affected.update(p.sec_events[s2].tolist())
         for s2 in st.lect_sections[l]:
             if st.sec_lect[s2] in (-1, l):
                 affected.update(p.sec_events[s2].tolist())

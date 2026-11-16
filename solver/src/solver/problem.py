@@ -156,6 +156,38 @@ class Problem:
         self.cell_offset = (np.concatenate([np.arange(n) for n in self.ev_len])
                             if self.n_events else np.array([], int))
 
+        # --- Quan hệ nhóm sinh viên <-> lớp / lớp-môn (H10) ---------------------------
+        # class_groups[c]       : các nhóm thuộc lớp c (buổi của lớp c không được trùng buổi học thêm của nhóm)
+        # sec_extra_groups[s]   : các nhóm học thêm lớp-môn s
+        # sec_linked[s]         : lớp-môn của lớp khác mà vị trí của s ảnh hưởng tới qua H10
+        self.class_groups: list[np.ndarray] = [np.flatnonzero(self.group_class == c) for c in range(self.n_classes)]
+        # Chỉ số phẳng (lớp của nhóm g, ô) cho mọi (g, ô): gộp mảng (nhóm, ô) theo lớp bằng một lần bincount
+        self.group_class_cell = (self.group_class[:, None] * self.n_cells + np.arange(self.n_cells)).ravel()
+        sec_groups: list[list[int]] = [[] for _ in range(self.n_sections)]
+        for g, extra in enumerate(self.group_extra):
+            for s in extra.tolist():
+                sec_groups[s].append(g)
+        self.sec_extra_groups: list[np.ndarray] = [np.array(x, dtype=np.int64) for x in sec_groups]
+        class_secs = [np.flatnonzero(self.sec_class == c) for c in range(self.n_classes)]
+        linked: list[set[int]] = [set() for _ in range(self.n_sections)]
+        for g, extra in enumerate(self.group_extra):
+            members = set(class_secs[self.group_class[g]].tolist()) | set(extra.tolist())
+            for s in extra.tolist():
+                linked[s] |= members
+            for s in class_secs[self.group_class[g]].tolist():
+                linked[s] |= set(extra.tolist())
+        self.sec_linked: list[np.ndarray] = [
+            np.array(sorted(x - {s}), dtype=np.int64) for s, x in enumerate(linked)]
+        # Các ô của buổi học thêm theo từng nhóm: (gx_group[j], gx_event[j], gx_offset[j]) như cell_event
+        pair_g = [g for g, extra in enumerate(self.group_extra) for s in extra.tolist() for _ in self.sec_events[s]]
+        pair_e = [int(e) for extra in self.group_extra for s in extra.tolist() for e in self.sec_events[s]]
+        pair_g = np.array(pair_g, dtype=np.int64)
+        pair_e = np.array(pair_e, dtype=np.int64)
+        lens = self.ev_len[pair_e] if len(pair_e) else np.array([], dtype=np.int64)
+        self.gx_group = np.repeat(pair_g, lens)
+        self.gx_event = np.repeat(pair_e, lens)
+        self.gx_offset = (np.concatenate([np.arange(n) for n in lens]) if len(lens) else np.array([], dtype=np.int64))
+
     # --- Kích thước -----------------------------------------------------------
 
     @property
