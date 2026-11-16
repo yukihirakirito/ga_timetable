@@ -17,6 +17,10 @@ GA quyết định **giảng viên** cho từng lớp-môn và **thời điểm*
 | Ca | Khung giờ của TKB: ca sáng (tiết 1–6), ca chiều (tiết 7–12) |
 | Buổi học | n tiết liền kề (2 ≤ n ≤ 5) của một lớp-môn, nằm trọn trong một ca |
 | Lớp-môn (`course_section`) | Một lớp sinh viên học một môn trong học kỳ |
+| Sinh viên (`student`) | Thuộc đúng một lớp; học **toàn bộ** lớp-môn của lớp mình trong học kỳ (không miễn môn) |
+| Học thêm (`extra_enrollment`) | Sinh viên đăng ký thêm lớp-môn của **lớp khác** (học lại môn kỳ trước, học ghép) |
+| Sĩ số lớp-môn | Số sinh viên của lớp + số sinh viên học thêm lớp-môn đó |
+| Nhóm sinh viên | Các sinh viên có cùng tập lớp-môn (lớp mình + phần học thêm). Chỉ sinh viên có học thêm mới tạo nhóm riêng |
 
 ## 3. Thời gian
 
@@ -61,12 +65,13 @@ Hệ quả đã chấp nhận: lịch dồn về nửa đầu kỳ.
 | H1 | Một lớp sinh viên không học 2 buổi chồng tiết |
 | H2 | Một giảng viên không dạy 2 buổi chồng tiết |
 | H3 | Một phòng không chứa 2 buổi chồng tiết |
-| H4 | Phòng đúng loại và đủ sức chứa |
+| H4 | Phòng đúng loại và đủ sức chứa (theo **sĩ số lớp-môn**, tính cả sinh viên học thêm) |
 | H5 | Không xếp vào khung giờ giảng viên bận (`UNAVAILABLE`) |
 | H6 | Các buổi trong tuần của cùng một lớp-môn ở các ngày khác nhau |
 | H7 | Giảng viên đúng chuyên môn (đảm bảo bằng miền giá trị của gen) |
 | H8 | Buổi học nằm trọn trong một ca, không vắt qua giờ nghỉ trưa |
 | H9 | Lớp-môn học đủ số buổi trước hết tuần 15 (tính cả học bù) |
+| H10 | Một sinh viên không học 2 buổi chồng tiết (gồm cả lớp-môn học thêm). *Chốt 2026-11-16, cài ở M8* |
 
 **Mềm** (có trọng số)
 
@@ -96,6 +101,7 @@ Phạt cứng 10 000 do người dùng chốt; nếu tổng phạt mềm của m
 | H4 | Luôn 0 do gán phòng đã lọc loại và sức chứa; giữ để kiểm tra chéo |
 | H5 | Số tiết dạy rơi vào giờ bận |
 | H6 | Số buổi thừa trong cùng một ngày của một lớp-môn |
+| H10 | Σ trên các nhóm sinh viên: số tiết bị trùng giữa các buổi của nhóm mà ít nhất một buổi thuộc lớp-môn học thêm (trùng giữa hai buổi cùng lớp đã tính ở H1). **Không** nhân số sinh viên trong nhóm |
 | S1 (1) | Tiết trống kẹp giữa các buổi trong cùng ca + số ngày lớp phải lên trường |
 | S2 (5) | Số cặp ngày liền kề có buổi của cùng lớp-môn |
 | S4 (1) | Số (giảng viên, ngày) có dạy |
@@ -171,12 +177,17 @@ Cài đặt ở `solver/src/solver/calendar.py`, mất vài ms cho bộ `large`.
 
 ## 7. Dữ liệu
 
-- Khoa CNTT, **12 ngành**, mỗi ngành 5–8 lớp → khoảng **80 lớp**, sĩ số 25–40.
+- Khoa CNTT, **12 ngành**, mỗi ngành 5–8 lớp → khoảng **80 lớp**, mỗi lớp 25–40 sinh viên.
 - Chương trình 6 kỳ đào tạo, mỗi kỳ 5–6 môn (15–18 TC). Không có môn tiên quyết, không phân biệt môn chuyên ngành.
 - Môn chung (Tiếng Anh, Chính trị...) dùng chung giữa các ngành, do bộ môn riêng dạy.
 - Môn **không** tách tín chỉ lý thuyết/thực hành: mỗi môn có một tổng TC và một loại phòng (THEORY / LAB / STUDIO).
 - Giảng viên dạy 2–5 môn trong cùng bộ môn.
-- Không học lại, không ghép lớp.
+- **Sinh viên thật** (chốt 2026-11-16, cài ở M8): bảng `students` (thuộc một lớp) và `extra_enrollments`
+  (học thêm lớp-môn của lớp khác). **Sĩ số lớp đếm từ bảng sinh viên**, bỏ cột `student_classes.size`.
+  Dữ liệu mẫu: **5%** sinh viên (từ kỳ 2 trở lên) học lại 1–2 môn kỳ dưới theo chương trình ngành mình, ở một lớp
+  bất kỳ đang học môn đó trong học kỳ (kể cả lớp ngành khác nếu là môn chung).
+- Snapshot **không** chứa từng sinh viên: Go gom thành nhóm sinh viên (tập lớp-môn + số sinh viên) và tính sẵn
+  sĩ số từng lớp-môn. Đổi định dạng nên `schema_version` lên **2.0** (solver cũ không được âm thầm bỏ qua H10).
 - 3 bộ dữ liệu: `small` (11 lớp), `medium` (40 lớp), `large` (76 lớp).
   Bộ sinh dữ liệu tự cân số phòng/giảng viên: tải phòng ≤ 75%, giảng viên trung bình ~16 tiết/tuần.
   Bộ `large` cần ~148 giảng viên (không phải ~80 như ước lượng ban đầu) vì Cách A dồn lịch về đầu kỳ.
@@ -184,10 +195,27 @@ Cài đặt ở `solver/src/solver/calendar.py`, mất vài ms cho bộ `large`.
 
 ## 8. Kiến trúc
 
-- **Go** (`admin/`): CRUD danh mục, cấu hình học kỳ, tạo job, xem/xuất lịch. Không phân quyền.
+- **Go** (`admin/`): CRUD danh mục (gồm sinh viên, học thêm), cấu hình học kỳ, tạo job, xem lịch. Không phân quyền,
+  **không xuất file**. Công nghệ đã chốt (2026-11-16):
+  - **Giao diện:** render phía server bằng `html/template` + **htmx** (extension SSE cho tiến độ GA). Không SPA, không Node.
+    CSS bằng **Tailwind** (standalone CLI, không cần Node); biểu đồ hội tụ bằng **Chart.js**. htmx và Chart.js nhúng vào
+    binary (`go:embed`), không dùng CDN.
+  - **Tiến độ:** handler SSE đọc `run_progress` mỗi giây (theo `generation` lớn nhất đã gửi); không dùng LISTEN/NOTIFY.
+  - **Xem lịch** (mốc cuối, quan trọng nhất): theo một run, chọn tuần mẫu hoặc tuần 1–15.
+    1. Thời khoá biểu một đối tượng (lưới Thứ 2–7 × tiết 1–12): theo lớp, sinh viên, giảng viên, phòng, môn.
+    2. Bảng tổng: mỗi hàng một đối tượng, cột 6 ngày × 12 tiết, tô màu theo môn, ô trùng tô đỏ.
+    3. So sánh 2–4 đối tượng: đặt cạnh nhau hoặc chồng lên (tô đỏ tiết trùng, hiện tiết cùng rảnh).
+    4. Kiểm tra trùng lịch bằng SQL trên dữ liệu thật, độc lập với GA: lớp, sinh viên, giảng viên, phòng.
+  - **Test:** database riêng `timetable_gotest` (Python dùng `timetable_test`).
+  - **Truy cập DB:** **sqlc + pgx/v5**, không dùng ORM. Viết SQL trong `admin/internal/db/queries/*.sql`,
+    `sqlc generate` sinh code Go có kiểu từ chính `db/migrations/` (migration là nguồn sự thật duy nhất của schema).
+    sqlc chạy qua Docker như golang-migrate, không cài vào máy. Code sinh ra không sửa tay.
+    Struct `Queries` do sqlc sinh đóng vai trò repository; service chỉ phụ thuộc interface nhỏ khai báo tại nơi dùng.
+  - **Cấu trúc:** chia package theo tính năng trong `admin/internal/` (handler → service → store), nối phụ thuộc tay trong `cmd/admin/main.go`.
 - **Python** (`solver/`): worker GA, chỉ đọc `input_snapshot`, không truy vấn bảng danh mục, không migrate.
-- **Hợp đồng** (`contracts/`): JSON Schema của `input_snapshot` (v1.0) + `validate.py` kiểm tra chéo.
-  Go tính sẵn giá trị suy ra từ tín chỉ; Python không tính lại.
+- **Hợp đồng** (`contracts/`): JSON Schema của `input_snapshot` (v1.0, lên v2.0 ở M8) + `validate.py` kiểm tra chéo,
+  và `run_params.schema.json`. Go tính sẵn giá trị suy ra từ tín chỉ; Python không tính lại.
+  **Không** có `result.schema.json`: worker ghi thẳng vào DB, Go đọc thẳng từ DB.
 - **PostgreSQL**: vừa là DB vừa là hàng đợi (`SELECT … FOR UPDATE SKIP LOCKED`, `heartbeat_at` cho worker chết).
   Không cần Redis/RabbitMQ. Vòng đời một run (`solver/src/solver/worker.py`):
   - `PENDING → RUNNING`: worker nhận job bằng một câu `UPDATE … WHERE id = (SELECT … FOR UPDATE SKIP LOCKED LIMIT 1)`,
@@ -207,17 +235,12 @@ Cài đặt ở `solver/src/solver/calendar.py`, mất vài ms cho bộ `large`.
     không có trùng phòng / trùng giảng viên, mọi lớp-môn đủ 15 × TC tiết.
 - Một học kỳ có nhiều run; `semesters.published_run_id` trỏ tới lịch được công bố.
 - Tiến độ GA ghi vào `run_progress`, Go đẩy lên giao diện bằng SSE.
-- Schema: `db/migrations/` (golang-migrate, SQL thuần). ERD: 21 bảng (11 + 4 + 6), chia 4 nhóm:
+- Schema: `db/migrations/` (golang-migrate, SQL thuần). ERD: 23 bảng (11 + 4 + 6 + 2), chia 4 nhóm:
   danh mục, đầu vào học kỳ, job, kết quả.
   - `000001_master_data`: danh mục; seed sẵn `room_types` và bảng quy đổi `credit_rules` mặc định.
   - `000002_semester_input`: học kỳ, ngày lễ, lớp trong học kỳ, lớp-môn.
   - `000003_runs_and_results`: job, tiến độ, phân công, tuần mẫu, lịch thật, vi phạm.
+  - `000004_students`: `students`, `extra_enrollments` (chỉ lưu phần học thêm); bỏ `student_classes.size`.
+    "Không học thêm lớp-môn của chính lớp mình" kiểm tra ở tầng ứng dụng và `validate.py` (CHECK không so được hai bảng).
   - Ràng buộc nào kiểm tra được trên một dòng thì đặt CHECK ở DB (H8, quy tắc quy đổi TC, ngày học không phải Chủ nhật).
     Ràng buộc chồng giờ (H1–H3) **không** đặt ở DB, vì lịch còn vi phạm vẫn phải lưu được.
-
-## 9. Để sau (ngoài phạm vi bản đầu)
-
-- Xếp lịch thi cho 3 tuần thi.
-- Cách B: chia kỳ thành 2 nửa để lịch không dồn đầu kỳ.
-- Cho GA chọn độ dài buổi học.
-- Benchmark ITC-2007 Track 3.

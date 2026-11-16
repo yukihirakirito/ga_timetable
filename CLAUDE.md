@@ -9,6 +9,8 @@ Bàn giao ngữ cảnh cho mọi phiên Claude Code làm việc trên repo này.
   Bản cũ "làm không chuẩn GA lắm". Repo này **làm lại cho đúng, ở quy mô nhỏ, để đưa vào CV**.
 - Trọng tâm là **giải thuật** (GA memetic, cấu trúc dữ liệu, hiệu năng). Dữ liệu chỉ cần hợp lý, không cần chi tiết
   (không có môn tiên quyết, không có ngữ nghĩa riêng của từng ngành).
+- Bài toán có **sinh viên thật** (chốt 2026-11-16): sinh viên học toàn bộ lớp-môn của lớp mình, cộng lớp-môn học thêm
+  ở lớp khác; ràng buộc cứng H10 chống trùng lịch theo sinh viên.
 - Kiến trúc: **Python** (`solver/`) chạy GA; **Go** (`admin/`) làm web quản trị (chưa làm);
   **PostgreSQL** vừa là DB vừa là hàng đợi job. Ranh giới Go ↔ Python là `input_snapshot`
   (xem [contracts/README.md](contracts/README.md)).
@@ -22,12 +24,13 @@ Bàn giao ngữ cảnh cho mọi phiên Claude Code làm việc trên repo này.
 - Hỏi trước khi cài phần mềm hoặc thêm thư viện (máy chưa có Go).
 - Chủ repo xem DB bằng **Navicat** (`localhost:5432`, user/pass/db đều là `timetable`).
   Sau khi chạy gì ghi vào DB thì nói rõ nên xem bảng nào.
-- Chủ repo **chưa code Go bao giờ**. Khi làm `admin/`, giải thích kỹ hơn bình thường.
+- Chủ repo **chưa code Go bao giờ**, quen PHP/Laravel (repository pattern...). Khi làm `admin/`, giải thích kỹ hơn
+  bình thường và đối chiếu với khái niệm tương đương trong Laravel.
 - **Git:** repo cá nhân `git@github.com:yukihirakirito/ga_timetable.git`. Chỉ commit/push khi được yêu cầu.
   Phải dùng tài khoản cá nhân (`yukihirakirito`), **không bao giờ** dùng tài khoản công ty `mor-dont`.
   Mỗi máy cần đặt riêng cho repo này `user.name`/`user.email` cá nhân và `core.sshCommand` trỏ tới SSH key cá nhân.
 
-## Trạng thái (cập nhật 2026-11-13)
+## Trạng thái (cập nhật 2026-11-16)
 
 | Mốc | Nội dung | Trạng thái |
 |---|---|---|
@@ -39,9 +42,17 @@ Bàn giao ngữ cảnh cho mọi phiên Claude Code làm việc trên repo này.
 | M5 | `calendar.py`: trải tuần mẫu ra ngày thật, ngày lễ, học bù, H9 | ✅ |
 | M6 | Thực nghiệm: so sánh với tìm kiếm cục bộ lặp nhiều lần trong cùng thời gian, ablation, đường hội tụ, biểu đồ | ⏸ **Hoãn** theo quyết định của chủ repo |
 | M7 | `worker.py` + `params.py`: hàng đợi Postgres (SKIP LOCKED), heartbeat, huỷ, job mồ côi → FAILED, ghi kết quả trong 1 transaction | ✅ |
-| Tiếp theo | Web quản trị Go (`admin/`): CRUD danh mục, cấu hình học kỳ, tạo job (INSERT `PENDING`), xem tiến độ (SSE từ `run_progress`), xem/xuất lịch, công bố run | ⏳ Chưa bắt đầu, chưa chốt kế hoạch |
+| M8a | Sinh viên thật: đặc tả H10, migration `000004` (`students`, `extra_enrollments`, bỏ `student_classes.size`), bộ sinh dữ liệu (5% SV học lại), snapshot **2.0** (`sections[].size`, `student_groups`) + `validate.py`, `problem.py` nạp nhóm (`group_class`, `group_extra`, `group_students`) | ✅ |
+| **M8b** | Solver hỗ trợ nhóm sinh viên: một buổi thuộc nhiều nhóm; H10 trong `evaluate` + `violations()`, delta `Workspace`, DSatur, học bù (`calendar`), lai ghép theo khối lớp. Đo lại `large` | ⏳ **Tiếp theo**. ⚠️ Trước khi xong M8b, solver nạp nhóm nhưng **chưa phạt H10**: lịch có thể trùng giờ với SV học lại |
+| G1 | Go: khung project (go.mod, main.go, config, pgxpool, sqlc, layout + htmx + Tailwind, middleware, test với `timetable_gotest`) | ⏳ |
+| G2 | Go: tạo snapshot 2.0 từ DB + kiểm tra (JSON Schema + kiểm tra ngữ nghĩa như `validate.py`). Xong khi khớp `db/seeds/large.snapshot.json` | ⏳ |
+| G3 | Go: tạo run (params theo `run_params.schema.json`), trang tiến độ SSE + Chart.js, huỷ run | ⏳ |
+| G4 | Go: CRUD danh mục, gồm sinh viên và học thêm; đổi lỗi DB thành thông báo dễ hiểu | ⏳ |
+| G5 | Go: cấu hình học kỳ (ngày lễ, lớp + `term_no`), sinh lớp-môn từ chương trình đào tạo, cảnh báo thiếu GV/phòng | ⏳ |
+| G6 | Go: **xem lịch** (mốc cuối, quan trọng nhất): 4 màn hình + kiểm tra trùng lịch lớp/SV/GV/phòng, công bố run. Xem [docs/decisions.md](docs/decisions.md) §8 | ⏳ |
+| G7 | Đóng gói (tuỳ chọn): Dockerfile, compose cả hệ thống, GitHub Actions, README có ảnh | ⏳ |
 
-Test: **86 passed** (`cd solver && uv run pytest`). Trong đó 11 test worker cần Postgres, không có thì tự skip.
+Test: **100 passed** (`cd solver && uv run pytest`). Trong đó 11 test worker cần Postgres, không có thì tự skip.
 
 Kết quả đã đo (phạt mềm, càng nhỏ càng tốt; mọi lịch GA đều 0 vi phạm cứng):
 
@@ -55,11 +66,12 @@ Worker trên `large`, 150 thế hệ: 92 s, 0 vi phạm cứng, 5 805 buổi l�
 (394 vi phạm cứng trên `large`).
 
 Việc còn để ngỏ:
-- Kế hoạch ban đầu có `contracts/result.schema.json`. Hiện worker ghi thẳng vào DB nên file này chưa cần;
-  quyết định lại khi làm Go.
+- Công nghệ Go đã chốt (chi tiết [docs/decisions.md](docs/decisions.md) §8): `html/template` + htmx, Tailwind
+  (standalone CLI, cần hỏi trước khi tải), Chart.js, sqlc + pgx/v5, santhosh-tekuri/jsonschema/v6, SSE đọc
+  `run_progress` mỗi giây. **Không** xuất file lịch, **không** có `result.schema.json`.
 - Câu hỏi cho M6: GA có hơn tìm kiếm cục bộ lặp nhiều lần trong cùng ngân sách thời gian không?
-- Mục "Để sau" trong [docs/decisions.md](docs/decisions.md) §9: lịch thi, chia kỳ làm 2 nửa, cho GA chọn độ dài buổi,
-  benchmark ITC-2007.
+- Đã bỏ hẳn (2026-11-16, chủ repo quyết định), không đề xuất lại: lịch thi, chia kỳ làm 2 nửa (Cách B),
+  cho GA chọn độ dài buổi, benchmark ITC-2007.
 
 ## Dựng môi trường trên máy mới
 
@@ -71,8 +83,13 @@ docker compose exec -T db psql -U timetable -d timetable -v ON_ERROR_STOP=1 < db
 cd solver && uv sync && uv run pytest
 ```
 
-Cần Docker và [uv](https://docs.astral.sh/uv/). Trên máy cũ, uv nằm ở `~/.local/bin/uv` và không có trong PATH
-của phiên Claude, nên phải gọi bằng đường dẫn đầy đủ.
+Cần Docker, [uv](https://docs.astral.sh/uv/) và Go. Trên máy cũ, uv nằm ở `~/.local/bin/uv` và có thể không có
+trong PATH của phiên Claude; khi đó gọi bằng đường dẫn đầy đủ.
+
+Cài Go (không cần sudo): tải bản linux-amd64 mới nhất từ https://go.dev/dl/, kiểm tra sha256, giải nén vào `~/.local`
+(được `~/.local/go`), thêm `$HOME/.local/go/bin` và `$HOME/go/bin` vào PATH. Máy cũ đang dùng go1.27.4.
+VSCode cần extension "Go" (Go Team at Google), extension sẽ đề nghị cài `gopls`.
+sqlc không cài vào máy: chạy qua Docker bằng `docker compose run --rm sqlc generate` (image `sqlc/sqlc:1.31.1`).
 
 ## Lệnh thường dùng (trong `solver/`)
 
@@ -85,7 +102,8 @@ uv run solver enqueue ../db/seeds/large.snapshot.json --params '{"ga":{"generati
 uv run solver worker --once
 ```
 
-Sinh lại dữ liệu mẫu: `python3 tools/datagen/generate.py [small|medium|large]`.
+Sinh lại dữ liệu mẫu: `python3 tools/datagen/generate.py [small|medium|large]` (Python hệ thống, cần `pyyaml`;
+`uv run` trong `solver/` không có `yaml`).
 
 ## Quy ước và những chỗ dễ sai
 

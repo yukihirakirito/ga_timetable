@@ -4,10 +4,13 @@
 Đầu ra  : db/seeds/<tên>.sql            nạp vào PostgreSQL (xoá dữ liệu cũ trước khi nạp)
           db/seeds/<tên>.snapshot.json  input_snapshot tương ứng, để phát triển solver khi chưa có Go
 
-Lớp, giảng viên, phòng được sinh ngẫu nhiên có seed (chạy lại ra y hệt).
+Lớp, giảng viên, phòng, sinh viên được sinh ngẫu nhiên có seed (chạy lại ra y hệt).
 Số giảng viên và số phòng được tính từ nhu cầu để không quá tải:
   - tải phòng mỗi loại <= 75%
   - giảng viên trung bình khoảng 16 tiết/tuần (tối đa 16-24)
+Sinh viên: mỗi lớp đúng `size` sinh viên; ~5% sinh viên học lại 1-2 môn kỳ dưới (theo chương trình ngành mình)
+ở một lớp bất kỳ đang học môn đó. Phần sinh viên dùng bộ số ngẫu nhiên riêng, nên lớp, lớp-môn, giảng viên
+giữ nguyên như khi chưa có sinh viên; phòng có thể thêm vì sĩ số lớp-môn tính cả sinh viên học thêm.
 
 Cách dùng:
     python3 tools/datagen/generate.py            # sinh cả 3 bộ
@@ -48,6 +51,8 @@ CLASSES_PER_MAJOR = (5, 8)
 CLASS_SIZE = (25, 40)
 ROOM_CAPACITIES = {"THEORY": [40, 50, 60], "LAB": [35, 40, 40, 45], "STUDIO": [35, 40]}
 ROOM_PREFIX = {"THEORY": "P", "LAB": "L", "STUDIO": "S"}
+RETAKE_RATE = 0.05             # tỉ lệ sinh viên (trên tổng số) học lại
+RETAKES_PER_STUDENT = (1, 2)   # số môn học lại của một sinh viên
 
 SEMESTER = {
     "id": 1,
@@ -188,6 +193,13 @@ class Dataset:
         self.classes = self._gen_classes()
         self.sections = self._gen_sections()
         self.lecturers = self._gen_lecturers()
+        # Bộ số ngẫu nhiên riêng: thêm sinh viên không làm đổi lớp / giảng viên / phòng đã sinh trước đó
+        self.students, self.extras = self._gen_students(random.Random(seed * 7919 + 1))
+        extra_count: dict[int, int] = defaultdict(int)
+        for sec, _ in self.extras:
+            extra_count[sec["id"]] += 1
+        for sec in self.sections:  # sĩ số lớp-môn = sĩ số lớp + số sinh viên học thêm
+            sec["size"] = sec["class"]["size"] + extra_count[sec["id"]]
         self.rooms = self._gen_rooms()
 
     # -- lớp và lớp-môn -----------------------------------------------------
@@ -218,6 +230,51 @@ class Dataset:
             for code in self.cur.plan[(cls["major"], cls["term_no"])]:
                 sections.append({"id": len(sections) + 1, "class": cls, "subject": self.cur.subjects[code]})
         return sections
+
+    # -- sinh viên ----------------------------------------------------------
+
+    def _gen_students(self, rng: random.Random) -> tuple[list[dict], list[tuple[dict, dict]]]:
+        """Trả về (sinh viên, [(lớp-môn học thêm, sinh viên)])."""
+        students = []
+        for cls in self.classes:
+            for _ in range(cls["size"]):
+                sid = len(students) + 1
+                name = f"{rng.choice(FAMILY)} {rng.choice(MIDDLE)} {rng.choice(GIVEN)}"
+                students.append({"id": sid, "code": f"SV{sid:05d}", "name": name, "class": cls})
+
+        by_code: dict[str, list[dict]] = defaultdict(list)  # mã môn -> lớp-môn đang mở trong học kỳ
+        for sec in self.sections:
+            by_code[sec["subject"].code].append(sec)
+
+        # Học lại: chỉ sinh viên từ kỳ 2 trở lên (có môn kỳ dưới), số lượng = RETAKE_RATE x tổng sinh viên
+        eligible = [st for st in students if st["class"]["term_no"] >= 2]
+        chosen = rng.sample(eligible, min(len(eligible), round(RETAKE_RATE * len(students))))
+        extras: list[tuple[dict, dict]] = []
+        for st in sorted(chosen, key=lambda x: x["id"]):
+            cls = st["class"]
+            current = set(self.cur.plan[(cls["major"], cls["term_no"])])
+            lower = sorted({c for t in range(1, cls["term_no"]) for c in self.cur.plan[(cls["major"], t)]} - current)
+            options = [c for c in lower if any(sec["class"] is not cls for sec in by_code[c])]
+            if not options:
+                continue
+            k = min(rng.randint(*RETAKES_PER_STUDENT), len(options))
+            for code in rng.sample(options, k):
+                sec = rng.choice([s for s in by_code[code] if s["class"] is not cls])
+                extras.append((sec, st))
+        return students, extras
+
+    def student_groups(self) -> list[dict]:
+        """Gom sinh viên có cùng tập lớp-môn học thêm (cùng lớp) thành nhóm: {class_id, extra_section_ids, students}."""
+        per_student: dict[int, list[int]] = defaultdict(list)
+        owner: dict[int, dict] = {}
+        for sec, st in self.extras:
+            per_student[st["id"]].append(sec["id"])
+            owner[st["id"]] = st
+        count: dict[tuple[int, tuple[int, ...]], int] = defaultdict(int)
+        for sid, secs in per_student.items():
+            count[(owner[sid]["class"]["id"], tuple(sorted(secs)))] += 1
+        return [{"class_id": cid, "extra_section_ids": list(secs), "students": n}
+                for (cid, secs), n in sorted(count.items())]
 
     # -- giảng viên ---------------------------------------------------------
 
@@ -288,15 +345,16 @@ class Dataset:
                 continue
             demand = sum(s["subject"].weekly_periods for s in secs)
             caps = [self.rng.choice(ROOM_CAPACITIES[rtype]) for _ in range(max(2, math.ceil(demand / cap_per_room)))]
-            # Lớp đông chỉ vào được phòng lớn: với mọi sĩ số s,
-            # nhu cầu của các lớp >= s phải vừa với các phòng sức chứa >= s.
+            # Lớp-môn đông chỉ vào được phòng lớn: với mọi sĩ số s,
+            # nhu cầu của các lớp-môn >= s phải vừa với các phòng sức chứa >= s.
+            # Sĩ số lớp-môn vượt cả phòng lớn nhất thì thêm phòng đúng bằng sĩ số đó.
             while True:
-                short = [size for size in {s["class"]["size"] for s in secs}
-                         if sum(x["subject"].weekly_periods for x in secs if x["class"]["size"] >= size)
-                         > cap_per_room * sum(1 for c in caps if c >= size)]
+                short = sorted(size for size in {s["size"] for s in secs}
+                               if sum(x["subject"].weekly_periods for x in secs if x["size"] >= size)
+                               > cap_per_room * sum(1 for c in caps if c >= size))
                 if not short:
                     break
-                caps.append(max(ROOM_CAPACITIES[rtype]))
+                caps.append(max(max(ROOM_CAPACITIES[rtype]), math.ceil(short[-1] / 5) * 5))
             for i, cap in enumerate(sorted(caps, reverse=True), start=1):
                 rooms.append({"id": len(rooms) + 1, "code": f"{ROOM_PREFIX[rtype]}{i:03d}",
                               "room_type": rtype, "capacity": cap})
@@ -321,6 +379,10 @@ class Dataset:
         for s in self.sections:
             weekly[s["class"]["id"]] += s["subject"].weekly_periods
         lines.append(f"    lớp        : {min(weekly.values())}-{max(weekly.values())} tiết/tuần (sức chứa {PERIODS_PER_WEEK})")
+        retakers = {st["id"] for _, st in self.extras}
+        lines.append(f"    sinh viên  : {len(self.students)}, học lại {len(retakers)} ({len(retakers) / len(self.students):.1%}), "
+                     f"{len(self.extras)} lượt học thêm, {len(self.student_groups())} nhóm; "
+                     f"sĩ số lớp-môn tối đa {max(s['size'] for s in self.sections)}")
         return "\n".join(lines)
 
     # -- xuất SQL -----------------------------------------------------------
@@ -332,8 +394,8 @@ class Dataset:
             "-- Xoá toàn bộ dữ liệu cũ (trừ room_types, credit_rules) rồi nạp lại.",
             "BEGIN;",
             "TRUNCATE departments, majors, subjects, curriculum_items, rooms, lecturers, lecturer_subjects,",
-            "         lecturer_slots, student_classes, semesters, semester_holidays, semester_classes,",
-            "         course_sections, schedule_runs, run_progress, section_assignments, template_sessions,",
+            "         lecturer_slots, student_classes, students, semesters, semester_holidays, semester_classes,",
+            "         course_sections, extra_enrollments, schedule_runs, run_progress, section_assignments, template_sessions,",
             "         calendar_sessions, run_violations RESTART IDENTITY CASCADE;",
             "",
         ]
@@ -362,8 +424,10 @@ class Dataset:
                  for b in blocks]
         out += _insert("lecturer_slots", ["id", "lecturer_id", "day", "period_from", "period_to", "kind"],
                        [(i, *row) for i, row in enumerate(slots, start=1)])
-        out += _insert("student_classes", ["id", "code", "major_id", "size"],
-                       [(c["id"], c["code"], self.major_ids[c["major"]], c["size"]) for c in self.classes])
+        out += _insert("student_classes", ["id", "code", "major_id"],
+                       [(c["id"], c["code"], self.major_ids[c["major"]]) for c in self.classes])
+        out += _insert("students", ["id", "code", "name", "class_id"],
+                       [(st["id"], st["code"], st["name"], st["class"]["id"]) for st in self.students])
         sem = SEMESTER
         out += _insert("semesters", ["id", "name", "start_date", "end_date", "study_weeks", "exam_weeks"],
                        [(sem["id"], sem["name"], sem["start_date"], sem["end_date"], sem["study_weeks"], sem["exam_weeks"])])
@@ -373,9 +437,11 @@ class Dataset:
                        [(sem["id"], c["id"], c["term_no"]) for c in self.classes], identity=False)
         out += _insert("course_sections", ["id", "semester_id", "class_id", "subject_id"],
                        [(s["id"], sem["id"], s["class"]["id"], self.subject_ids[s["subject"].code]) for s in self.sections])
+        out += _insert("extra_enrollments", ["section_id", "student_id"],
+                       sorted((sec["id"], st["id"]) for sec, st in self.extras), identity=False)
         out.append("-- Đưa sequence của cột identity về sau id lớn nhất")
         for table in ("departments", "majors", "subjects", "rooms", "lecturers", "lecturer_slots",
-                      "student_classes", "semesters", "course_sections"):
+                      "student_classes", "students", "semesters", "course_sections"):
             out.append(f"SELECT setval(pg_get_serial_sequence('{table}', 'id'), max(id)) FROM {table};")
         out += ["", "COMMIT;", ""]
         return "\n".join(out)
@@ -385,7 +451,7 @@ class Dataset:
     def to_snapshot(self) -> dict:
         used = sorted({s["subject"].code for s in self.sections}, key=self.subject_ids.get)
         return {
-            "schema_version": "1.0",
+            "schema_version": "2.0",
             "generated_at": GENERATED_AT,
             "semester": SEMESTER,
             "time_grid": TIME_GRID,
@@ -414,7 +480,9 @@ class Dataset:
                 "periods_per_session": s["subject"].periods_per_session,
                 "sessions_per_week": s["subject"].sessions_per_week,
                 "total_sessions": math.ceil(PERIODS_PER_CREDIT * s["subject"].credits / s["subject"].periods_per_session),
+                "size": s["size"],
             } for s in self.sections],
+            "student_groups": self.student_groups(),
         }
 
 

@@ -25,6 +25,10 @@ python3 contracts/validate.py contracts/examples/input_snapshot.tiny.json
   `total_sessions = ceil(total_periods / periods_per_session)`.
   Logic quy đổi chỉ nằm ở một chỗ (Go), Python không tính lại.
 - Gộp `lecturer_slots` thành hai danh sách `unavailable` / `preferred` của từng giảng viên.
+- **Sinh viên** (từ 2.0): đếm `classes[].size` từ bảng `students`; tính `sections[].size` = sĩ số lớp + số sinh viên
+  học thêm lớp-môn đó (`extra_enrollments`); gom sinh viên có học thêm thành `student_groups`: mỗi nhóm là các sinh viên
+  **cùng lớp, cùng tập lớp-môn học thêm** (`{class_id, extra_section_ids, students}`). Không đưa từng sinh viên vào
+  snapshot. Chỉ tính sinh viên của các lớp có trong học kỳ.
 - Chạy kiểm tra tương đương `validate.py` trước khi tạo job.
 
 **Python chịu trách nhiệm:**
@@ -40,10 +44,19 @@ python3 contracts/validate.py contracts/examples/input_snapshot.tiny.json
 - Một lớp không học một môn hai lần.
 - Giá trị suy ra của lớp-môn khớp số tín chỉ; buổi cuối ≥ 2 tiết; môn ≥ 4 TC có buổi ≥ 3 tiết;
   buổi không dài hơn ca; học xong trong số tuần học (H9).
-- Mỗi lớp-môn có ít nhất một giảng viên dạy được và một phòng đúng loại đủ sức chứa.
+- Mỗi lớp-môn có ít nhất một giảng viên dạy được và một phòng đúng loại **chứa được sĩ số lớp-môn**.
   Thiếu thì bài toán chắc chắn vô nghiệm, không cần chạy GA.
+- Nhóm sinh viên: lớp tồn tại; lớp-môn học thêm tồn tại, không thuộc chính lớp, không trùng môn lớp đang học,
+  không học một môn hai lần; không có hai nhóm trùng nhau (phải gộp); tổng sinh viên có học thêm ≤ sĩ số lớp.
+- `sections[].size` đúng bằng sĩ số lớp + tổng số sinh viên các nhóm học thêm lớp-môn đó.
 
 ## Đổi phiên bản
 
-Thêm trường tuỳ chọn mà Python cũ bỏ qua được: giữ `schema_version`.
-Đổi tên, xoá, đổi nghĩa trường: tăng `schema_version`, cập nhật cả Go và Python trong cùng một lần đổi.
+Thêm trường tuỳ chọn mà Python cũ bỏ qua được **mà không làm sai lời giải**: giữ `schema_version`.
+Đổi tên, xoá, đổi nghĩa trường, hoặc thêm thông tin mà bỏ qua thì ra lịch sai: tăng `schema_version`,
+cập nhật cả Go và Python trong cùng một lần đổi.
+
+| Phiên bản | Thay đổi |
+|---|---|
+| 1.0 | Bản đầu |
+| 2.0 | Sinh viên: `sections[].size`, `student_groups` (bắt buộc, có thể rỗng). Bỏ hỗ trợ 1.0 |

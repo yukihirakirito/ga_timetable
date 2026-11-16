@@ -119,11 +119,61 @@ def semantic_errors(s: dict) -> list[str]:
         # Phải có ít nhất một giảng viên và một phòng phù hợp, không thì vô nghiệm ngay
         if not any(sub["id"] in lec["subject_ids"] for lec in lecturers.values()):
             errors.append(f"{tag}: không giảng viên nào dạy được môn {sub['code']}")
-        if cls is not None and not any(
-            r["room_type"] == sub["room_type"] and r["capacity"] >= cls["size"] for r in rooms.values()
-        ):
-            errors.append(f"{tag}: không có phòng {sub['room_type']} chứa được {cls['size']} SV")
+        if not any(r["room_type"] == sub["room_type"] and r["capacity"] >= sec["size"] for r in rooms.values()):
+            errors.append(f"{tag}: không có phòng {sub['room_type']} chứa được {sec['size']} SV")
 
+    errors += _student_group_errors(s["student_groups"], classes, sections)
+    return errors
+
+
+def _student_group_errors(groups: list[dict], classes: dict[int, dict], sections: dict[int, dict]) -> list[str]:
+    """Nhóm sinh viên học thêm (H10) và sĩ số lớp-môn = sĩ số lớp + số sinh viên học thêm."""
+    errors: list[str] = []
+    own_subjects: dict[int, set[int]] = {}
+    for sec in sections.values():
+        own_subjects.setdefault(sec["class_id"], set()).add(sec["subject_id"])
+
+    extra_students: dict[int, int] = {}       # lớp-môn -> số sinh viên học thêm
+    students_with_extras: dict[int, int] = {}  # lớp -> số sinh viên có học thêm
+    seen: set[tuple[int, tuple[int, ...]]] = set()
+    for i, g in enumerate(groups):
+        tag = f"student_group {i} (lớp {g['class_id']})"
+        cls = classes.get(g["class_id"])
+        if cls is None:
+            errors.append(f"{tag}: class_id {g['class_id']} không tồn tại")
+            continue
+        key = (g["class_id"], tuple(sorted(g["extra_section_ids"])))
+        if key in seen:
+            errors.append(f"{tag}: trùng nhóm khác cùng lớp, cùng tập lớp-môn học thêm (phải gộp lại)")
+        seen.add(key)
+        students_with_extras[g["class_id"]] = students_with_extras.get(g["class_id"], 0) + g["students"]
+
+        extra_subjects: set[int] = set()
+        for sid in g["extra_section_ids"]:
+            sec = sections.get(sid)
+            if sec is None:
+                errors.append(f"{tag}: lớp-môn học thêm {sid} không tồn tại")
+                continue
+            if sec["class_id"] == g["class_id"]:
+                errors.append(f"{tag}: lớp-môn {sid} thuộc chính lớp của nhóm, không phải học thêm")
+            elif sec["subject_id"] in own_subjects.get(g["class_id"], set()):
+                errors.append(f"{tag}: lớp-môn {sid} trùng môn {sec['subject_id']} mà lớp đang học")
+            if sec["subject_id"] in extra_subjects:
+                errors.append(f"{tag}: học thêm môn {sec['subject_id']} hai lần")
+            extra_subjects.add(sec["subject_id"])
+            extra_students[sid] = extra_students.get(sid, 0) + g["students"]
+
+    for cid, n in students_with_extras.items():
+        if n > classes[cid]["size"]:
+            errors.append(f"class {classes[cid]['code']}: {n} sinh viên có học thêm > sĩ số lớp {classes[cid]['size']}")
+    for sec in sections.values():
+        cls = classes.get(sec["class_id"])
+        if cls is None:
+            continue
+        expected = cls["size"] + extra_students.get(sec["id"], 0)
+        if sec["size"] != expected:
+            errors.append(f"section {sec['id']}: size {sec['size']} != sĩ số lớp {cls['size']} "
+                          f"+ {extra_students.get(sec['id'], 0)} SV học thêm")
     return errors
 
 

@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.0",
+  "schema_version": "2.0",
   "generated_at": "2026-11-13T00:00:00+07:00",
   "semester": {
     "id": 1,
@@ -70,11 +70,17 @@
       "id": 6,
       "code": "L003",
       "room_type": "LAB",
-      "capacity": 35
+      "capacity": 45
     },
     {
       "id": 7,
       "code": "L004",
+      "room_type": "LAB",
+      "capacity": 35
+    },
+    {
+      "id": 8,
+      "code": "L005",
       "room_type": "LAB",
       "capacity": 35
     }
@@ -813,7 +819,8 @@
       "total_periods": 30,
       "periods_per_session": 3,
       "sessions_per_week": 1,
-      "total_sessions": 10
+      "total_sessions": 10,
+      "size": 35
     },
     {
       "id": 2,
@@ -822,7 +829,8 @@
       "total_periods": 30,
       "periods_per_session": 3,
       "sessions_per_week": 1,
-      "total_sessions": 10
+      "total_sessions": 10,
+      "size": 33
     },
     {
       "id": 3,
@@ -831,7 +839,8 @@
       "total_periods": 45,
       "periods_per_session": 3,
       "sessions_per_week": 2,
-      "total_sessions": 15
+      "total_sessions": 15,
+      "size": 34
     },
     {
       "id": 4,
@@ -840,7 +849,8 @@
       "total_periods": 45,
       "periods_per_session": 3,
       "sessions_per_week": 2,
-      "total_sessions": 15
+      "total_sessions": 15,
+      "size": 32
     },
     {
       "id": 5,
@@ -849,7 +859,8 @@
       "total_periods": 15,
       "periods_per_session": 3,
       "sessions_per_week": 1,
-      "total_sessions": 5
+      "total_sessions": 5,
+      "size": 34
     },
     {
       "id": 6,
@@ -858,7 +869,8 @@
       "total_periods": 60,
       "periods_per_session": 4,
       "sessions_per_week": 2,
-      "total_sessions": 15
+      "total_sessions": 15,
+      "size": 34
     },
     {
       "id": 7,
@@ -867,7 +879,8 @@
       "total_periods": 30,
       "periods_per_session": 3,
       "sessions_per_week": 1,
-      "total_sessions": 10
+      "total_sessions": 10,
+      "size": 35
     },
     {
       "id": 8,
@@ -876,7 +889,8 @@
       "total_periods": 45,
       "periods_per_session": 3,
       "sessions_per_week": 2,
-      "total_sessions": 15
+      "total_sessions": 15,
+      "size": 34
     },
     {
       "id": 9,
@@ -885,7 +899,8 @@
       "total_periods": 45,
       "periods_per_session": 3,
       "sessions_per_week": 2,
-      "total_sessions": 15
+      "total_sessions": 15,
+      "size": 34
     },
     {
       "id": 10,
@@ -894,7 +909,8 @@
       "total_periods": 45,
       "periods_per_session": 3,
       "sessions_per_week": 2,
-      "total_sessions": 15
+      "total_sessions": 15,
+      "size": 35
     },
     {
       "id": 11,
@@ -903,7 +919,8 @@
       "total_periods": 45,
       "periods_per_session": 3,
       "sessions_per_week": 2,
-      "total_sessions": 15
+      "total_sessions": 15,
+      "size": 34
     },
     {
       "id": 12,
@@ -912,7 +929,8 @@
       "total_periods": 45,
       "periods_per_session": 3,
       "sessions_per_week": 2,
-      "total_sessions": 15
+      "total_sessions": 15,
+      "size": 35
     },
     {
       "id": 13,
@@ -921,7 +939,8 @@
       "total_periods": 30,
       "periods_per_session": 3,
       "sessions_per_week": 1,
-      "total_sessions": 10
+      "total_sessions": 10,
+      "size": 40
     },
     {
       "id": 14,
@@ -930,7 +949,8 @@
       "total_periods": 30,
       "periods_per_session": 3,
       "sessions_per_week": 1,
-      "total_sessions": 10
+      "total_sessions": 10,
+      "size": 40
     },
     {
       "id": 15,
@@ -939,7 +959,8 @@
       "total_periods": 45,
       "periods_per_session": 3,
       "sessions_per_week": 2,
-      "total_sessions": 15
+      "total_sessions": 15,
+      "size": 41
     },
     {
       "id": 16,
@@ -948,7 +969,8 @@
       "total_periods": 60,
       "periods_per_session": 4,
       "sessions_per_week": 2,
-      "total_sessions": 15
+      "total_sessions": 15,
+      "size": 40
     },
     {
       "id": 17,
@@ -957,7 +979,8 @@
       "total_periods": 45,
       "periods_per_session": 3,
       "sessions_per_week": 2,
-      "total_sessions": 15
+      "total_sessions": 15,
+      "size": 40
     },
     {
       "id": 18,
@@ -966,7 +989,8 @@
       "total_periods": 45,
       "periods_per_session": 3,
       "sessions_per_week": 2,
-      "total_sessions": 15
+      "total_sessions": 15,
+      "size": 41
     },
     {
       "id": 19,
@@ -975,7 +999,8 @@
       "total_periods": 30,
       "periods_per_session": 3,
       "sessions_per_week": 1,
-      "total_sessions": 10
+      "total_sessions": 10,
+      "size": 31
     },
     {
       "id": 20,
@@ -984,7 +1009,8 @@
       "total_periods": 30,
       "periods_per_session": 3,
       "sessions_per_week": 1,
-      "total_sessions": 10
+      "total_sessions": 10,
+      "size": 31
     },
     {
       "id": 21,
@@ -993,7 +1019,8 @@
       "total_periods": 45,
       "periods_per_session": 3,
       "sessions_per_week": 2,
-      "total_sessions": 15
+      "total_sessions": 15,
+      "size": 31
     },
     {
       "id": 22,
@@ -1002,7 +1029,8 @@
       "total_periods": 45,
       "periods_per_session": 3,
       "sessions_per_week": 2,
-      "total_sessions": 15
+      "total_sessions": 15,
+      "size": 31
     },
     {
       "id": 23,
@@ -1011,7 +1039,8 @@
       "total_periods": 60,
       "periods_per_session": 4,
       "sessions_per_week": 2,
-      "total_sessions": 15
+      "total_sessions": 15,
+      "size": 31
     },
     {
       "id": 24,
@@ -1020,7 +1049,8 @@
       "total_periods": 45,
       "periods_per_session": 3,
       "sessions_per_week": 2,
-      "total_sessions": 15
+      "total_sessions": 15,
+      "size": 32
     },
     {
       "id": 25,
@@ -1029,7 +1059,8 @@
       "total_periods": 30,
       "periods_per_session": 3,
       "sessions_per_week": 1,
-      "total_sessions": 10
+      "total_sessions": 10,
+      "size": 35
     },
     {
       "id": 26,
@@ -1038,7 +1069,8 @@
       "total_periods": 30,
       "periods_per_session": 3,
       "sessions_per_week": 1,
-      "total_sessions": 10
+      "total_sessions": 10,
+      "size": 35
     },
     {
       "id": 27,
@@ -1047,7 +1079,8 @@
       "total_periods": 45,
       "periods_per_session": 3,
       "sessions_per_week": 2,
-      "total_sessions": 15
+      "total_sessions": 15,
+      "size": 35
     },
     {
       "id": 28,
@@ -1056,7 +1089,8 @@
       "total_periods": 45,
       "periods_per_session": 3,
       "sessions_per_week": 2,
-      "total_sessions": 15
+      "total_sessions": 15,
+      "size": 35
     },
     {
       "id": 29,
@@ -1065,7 +1099,8 @@
       "total_periods": 45,
       "periods_per_session": 3,
       "sessions_per_week": 2,
-      "total_sessions": 15
+      "total_sessions": 15,
+      "size": 36
     },
     {
       "id": 30,
@@ -1074,7 +1109,8 @@
       "total_periods": 60,
       "periods_per_session": 4,
       "sessions_per_week": 2,
-      "total_sessions": 15
+      "total_sessions": 15,
+      "size": 35
     },
     {
       "id": 31,
@@ -1083,7 +1119,8 @@
       "total_periods": 30,
       "periods_per_session": 3,
       "sessions_per_week": 1,
-      "total_sessions": 10
+      "total_sessions": 10,
+      "size": 39
     },
     {
       "id": 32,
@@ -1092,7 +1129,8 @@
       "total_periods": 30,
       "periods_per_session": 3,
       "sessions_per_week": 1,
-      "total_sessions": 10
+      "total_sessions": 10,
+      "size": 39
     },
     {
       "id": 33,
@@ -1101,7 +1139,8 @@
       "total_periods": 75,
       "periods_per_session": 5,
       "sessions_per_week": 2,
-      "total_sessions": 15
+      "total_sessions": 15,
+      "size": 39
     },
     {
       "id": 34,
@@ -1110,7 +1149,8 @@
       "total_periods": 45,
       "periods_per_session": 3,
       "sessions_per_week": 2,
-      "total_sessions": 15
+      "total_sessions": 15,
+      "size": 39
     },
     {
       "id": 35,
@@ -1119,7 +1159,8 @@
       "total_periods": 45,
       "periods_per_session": 3,
       "sessions_per_week": 2,
-      "total_sessions": 15
+      "total_sessions": 15,
+      "size": 39
     },
     {
       "id": 36,
@@ -1128,7 +1169,8 @@
       "total_periods": 30,
       "periods_per_session": 3,
       "sessions_per_week": 1,
-      "total_sessions": 10
+      "total_sessions": 10,
+      "size": 39
     },
     {
       "id": 37,
@@ -1137,7 +1179,8 @@
       "total_periods": 30,
       "periods_per_session": 3,
       "sessions_per_week": 1,
-      "total_sessions": 10
+      "total_sessions": 10,
+      "size": 40
     },
     {
       "id": 38,
@@ -1146,7 +1189,8 @@
       "total_periods": 45,
       "periods_per_session": 3,
       "sessions_per_week": 2,
-      "total_sessions": 15
+      "total_sessions": 15,
+      "size": 42
     },
     {
       "id": 39,
@@ -1155,7 +1199,8 @@
       "total_periods": 45,
       "periods_per_session": 3,
       "sessions_per_week": 2,
-      "total_sessions": 15
+      "total_sessions": 15,
+      "size": 40
     },
     {
       "id": 40,
@@ -1164,7 +1209,8 @@
       "total_periods": 15,
       "periods_per_session": 3,
       "sessions_per_week": 1,
-      "total_sessions": 5
+      "total_sessions": 5,
+      "size": 40
     },
     {
       "id": 41,
@@ -1173,7 +1219,8 @@
       "total_periods": 60,
       "periods_per_session": 4,
       "sessions_per_week": 2,
-      "total_sessions": 15
+      "total_sessions": 15,
+      "size": 41
     },
     {
       "id": 42,
@@ -1182,7 +1229,8 @@
       "total_periods": 30,
       "periods_per_session": 3,
       "sessions_per_week": 1,
-      "total_sessions": 10
+      "total_sessions": 10,
+      "size": 38
     },
     {
       "id": 43,
@@ -1191,7 +1239,8 @@
       "total_periods": 45,
       "periods_per_session": 3,
       "sessions_per_week": 2,
-      "total_sessions": 15
+      "total_sessions": 15,
+      "size": 38
     },
     {
       "id": 44,
@@ -1200,7 +1249,8 @@
       "total_periods": 45,
       "periods_per_session": 3,
       "sessions_per_week": 2,
-      "total_sessions": 15
+      "total_sessions": 15,
+      "size": 36
     },
     {
       "id": 45,
@@ -1209,7 +1259,8 @@
       "total_periods": 45,
       "periods_per_session": 3,
       "sessions_per_week": 2,
-      "total_sessions": 15
+      "total_sessions": 15,
+      "size": 36
     },
     {
       "id": 46,
@@ -1218,7 +1269,8 @@
       "total_periods": 45,
       "periods_per_session": 3,
       "sessions_per_week": 2,
-      "total_sessions": 15
+      "total_sessions": 15,
+      "size": 37
     },
     {
       "id": 47,
@@ -1227,7 +1279,8 @@
       "total_periods": 45,
       "periods_per_session": 3,
       "sessions_per_week": 2,
-      "total_sessions": 15
+      "total_sessions": 15,
+      "size": 36
     },
     {
       "id": 48,
@@ -1236,7 +1289,8 @@
       "total_periods": 30,
       "periods_per_session": 3,
       "sessions_per_week": 1,
-      "total_sessions": 10
+      "total_sessions": 10,
+      "size": 31
     },
     {
       "id": 49,
@@ -1245,7 +1299,8 @@
       "total_periods": 30,
       "periods_per_session": 3,
       "sessions_per_week": 1,
-      "total_sessions": 10
+      "total_sessions": 10,
+      "size": 31
     },
     {
       "id": 50,
@@ -1254,7 +1309,8 @@
       "total_periods": 45,
       "periods_per_session": 3,
       "sessions_per_week": 2,
-      "total_sessions": 15
+      "total_sessions": 15,
+      "size": 31
     },
     {
       "id": 51,
@@ -1263,7 +1319,8 @@
       "total_periods": 60,
       "periods_per_session": 4,
       "sessions_per_week": 2,
-      "total_sessions": 15
+      "total_sessions": 15,
+      "size": 31
     },
     {
       "id": 52,
@@ -1272,7 +1329,8 @@
       "total_periods": 45,
       "periods_per_session": 3,
       "sessions_per_week": 2,
-      "total_sessions": 15
+      "total_sessions": 15,
+      "size": 31
     },
     {
       "id": 53,
@@ -1281,7 +1339,8 @@
       "total_periods": 45,
       "periods_per_session": 3,
       "sessions_per_week": 2,
-      "total_sessions": 15
+      "total_sessions": 15,
+      "size": 31
     },
     {
       "id": 54,
@@ -1290,7 +1349,8 @@
       "total_periods": 30,
       "periods_per_session": 3,
       "sessions_per_week": 1,
-      "total_sessions": 10
+      "total_sessions": 10,
+      "size": 40
     },
     {
       "id": 55,
@@ -1299,7 +1359,8 @@
       "total_periods": 30,
       "periods_per_session": 3,
       "sessions_per_week": 1,
-      "total_sessions": 10
+      "total_sessions": 10,
+      "size": 40
     },
     {
       "id": 56,
@@ -1308,7 +1369,8 @@
       "total_periods": 45,
       "periods_per_session": 3,
       "sessions_per_week": 2,
-      "total_sessions": 15
+      "total_sessions": 15,
+      "size": 40
     },
     {
       "id": 57,
@@ -1317,7 +1379,8 @@
       "total_periods": 45,
       "periods_per_session": 3,
       "sessions_per_week": 2,
-      "total_sessions": 15
+      "total_sessions": 15,
+      "size": 40
     },
     {
       "id": 58,
@@ -1326,7 +1389,8 @@
       "total_periods": 60,
       "periods_per_session": 4,
       "sessions_per_week": 2,
-      "total_sessions": 15
+      "total_sessions": 15,
+      "size": 40
     },
     {
       "id": 59,
@@ -1335,7 +1399,8 @@
       "total_periods": 45,
       "periods_per_session": 3,
       "sessions_per_week": 2,
-      "total_sessions": 15
+      "total_sessions": 15,
+      "size": 40
     },
     {
       "id": 60,
@@ -1344,7 +1409,8 @@
       "total_periods": 30,
       "periods_per_session": 3,
       "sessions_per_week": 1,
-      "total_sessions": 10
+      "total_sessions": 10,
+      "size": 35
     },
     {
       "id": 61,
@@ -1353,7 +1419,8 @@
       "total_periods": 30,
       "periods_per_session": 3,
       "sessions_per_week": 1,
-      "total_sessions": 10
+      "total_sessions": 10,
+      "size": 35
     },
     {
       "id": 62,
@@ -1362,7 +1429,8 @@
       "total_periods": 75,
       "periods_per_session": 5,
       "sessions_per_week": 2,
-      "total_sessions": 15
+      "total_sessions": 15,
+      "size": 35
     },
     {
       "id": 63,
@@ -1371,7 +1439,8 @@
       "total_periods": 45,
       "periods_per_session": 3,
       "sessions_per_week": 2,
-      "total_sessions": 15
+      "total_sessions": 15,
+      "size": 35
     },
     {
       "id": 64,
@@ -1380,7 +1449,153 @@
       "total_periods": 45,
       "periods_per_session": 3,
       "sessions_per_week": 2,
-      "total_sessions": 15
+      "total_sessions": 15,
+      "size": 35
+    }
+  ],
+  "student_groups": [
+    {
+      "class_id": 2,
+      "extra_section_ids": [
+        1,
+        39
+      ],
+      "students": 1
+    },
+    {
+      "class_id": 2,
+      "extra_section_ids": [
+        5,
+        37
+      ],
+      "students": 1
+    },
+    {
+      "class_id": 2,
+      "extra_section_ids": [
+        38
+      ],
+      "students": 1
+    },
+    {
+      "class_id": 3,
+      "extra_section_ids": [
+        12
+      ],
+      "students": 1
+    },
+    {
+      "class_id": 3,
+      "extra_section_ids": [
+        41
+      ],
+      "students": 2
+    },
+    {
+      "class_id": 3,
+      "extra_section_ids": [
+        46
+      ],
+      "students": 1
+    },
+    {
+      "class_id": 4,
+      "extra_section_ids": [
+        3,
+        18
+      ],
+      "students": 1
+    },
+    {
+      "class_id": 4,
+      "extra_section_ids": [
+        6
+      ],
+      "students": 1
+    },
+    {
+      "class_id": 4,
+      "extra_section_ids": [
+        10,
+        40
+      ],
+      "students": 1
+    },
+    {
+      "class_id": 5,
+      "extra_section_ids": [
+        38,
+        43
+      ],
+      "students": 1
+    },
+    {
+      "class_id": 6,
+      "extra_section_ids": [
+        2,
+        29
+      ],
+      "students": 1
+    },
+    {
+      "class_id": 6,
+      "extra_section_ids": [
+        7
+      ],
+      "students": 1
+    },
+    {
+      "class_id": 6,
+      "extra_section_ids": [
+        24,
+        42
+      ],
+      "students": 1
+    },
+    {
+      "class_id": 9,
+      "extra_section_ids": [
+        6
+      ],
+      "students": 1
+    },
+    {
+      "class_id": 10,
+      "extra_section_ids": [
+        1
+      ],
+      "students": 1
+    },
+    {
+      "class_id": 10,
+      "extra_section_ids": [
+        1,
+        43
+      ],
+      "students": 1
+    },
+    {
+      "class_id": 10,
+      "extra_section_ids": [
+        3,
+        5
+      ],
+      "students": 1
+    },
+    {
+      "class_id": 10,
+      "extra_section_ids": [
+        15
+      ],
+      "students": 1
+    },
+    {
+      "class_id": 10,
+      "extra_section_ids": [
+        38,
+        42
+      ],
+      "students": 1
     }
   ]
 }

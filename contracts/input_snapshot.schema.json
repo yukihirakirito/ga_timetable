@@ -14,12 +14,13 @@
     "lecturers",
     "subjects",
     "classes",
-    "sections"
+    "sections",
+    "student_groups"
   ],
   "properties": {
     "schema_version": {
-      "description": "Phiên bản hợp đồng. Đổi cấu trúc thì tăng số, Python từ chối phiên bản không hỗ trợ.",
-      "const": "1.0"
+      "description": "Phiên bản hợp đồng. Đổi cấu trúc thì tăng số, Python từ chối phiên bản không hỗ trợ. 2.0: thêm sinh viên (sections[].size, student_groups).",
+      "const": "2.0"
     },
     "generated_at": {
       "type": "string",
@@ -51,6 +52,11 @@
       "type": "array",
       "minItems": 1,
       "items": { "$ref": "#/$defs/section" }
+    },
+    "student_groups": {
+      "description": "Nhóm sinh viên có học thêm. Sinh viên không học thêm không tạo nhóm (lịch của họ là lịch lớp). Có thể rỗng.",
+      "type": "array",
+      "items": { "$ref": "#/$defs/student_group" }
     }
   },
   "$defs": {
@@ -208,7 +214,11 @@
         "id": { "$ref": "#/$defs/id" },
         "code": { "$ref": "#/$defs/code" },
         "term_no": { "type": "integer", "minimum": 1 },
-        "size": { "type": "integer", "minimum": 1 }
+        "size": {
+          "description": "Số sinh viên của lớp (Go đếm từ bảng students)",
+          "type": "integer",
+          "minimum": 1
+        }
       }
     },
     "section": {
@@ -222,7 +232,8 @@
         "total_periods",
         "periods_per_session",
         "sessions_per_week",
-        "total_sessions"
+        "total_sessions",
+        "size"
       ],
       "properties": {
         "id": { "$ref": "#/$defs/id" },
@@ -247,6 +258,31 @@
         },
         "total_sessions": {
           "description": "ceil(total_periods / periods_per_session); buổi cuối dài total_periods - (total_sessions - 1) x periods_per_session",
+          "type": "integer",
+          "minimum": 1
+        },
+        "size": {
+          "description": "Sĩ số lớp-môn = sĩ số lớp + số sinh viên học thêm lớp-môn này. Dùng cho sức chứa phòng (H4).",
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "student_group": {
+      "description": "`students` sinh viên của lớp `class_id` học toàn bộ lớp-môn của lớp mình, cộng các lớp-môn `extra_section_ids` của lớp khác. H10: các buổi của nhóm không được chồng tiết.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["class_id", "extra_section_ids", "students"],
+      "properties": {
+        "class_id": { "$ref": "#/$defs/id" },
+        "extra_section_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/id" }
+        },
+        "students": {
+          "description": "Số sinh viên trong nhóm",
           "type": "integer",
           "minimum": 1
         }

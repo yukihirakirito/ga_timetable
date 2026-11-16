@@ -33,5 +33,16 @@ services:
       db:
         condition: service_healthy
 
+  # Sinh code Go từ SQL (admin/sqlc.yaml đọc schema từ db/migrations):
+  #   docker compose run --rm sqlc generate
+  #   docker compose run --rm sqlc vet
+  sqlc:
+    image: sqlc/sqlc:1.31.1
+    profiles: ["tools"]
+    user: "${UID:-1000}:${GID:-1000}"     # file sinh ra thuộc user của bạn, không phải root
+    volumes:
+      - .:/src
+    working_dir: /src/admin
+
 volumes:
   pgdata:

@@ -50,10 +50,23 @@ def section(id, class_id, subject_id, credits, periods_per_session=None, session
             "periods_per_session": pps, "sessions_per_week": spw, "total_sessions": math.ceil(total / pps)}
 
 
-def make_problem(*, rooms, lecturers, subjects, classes, sections) -> Problem:
-    snap = {"schema_version": "1.0", "generated_at": "2026-11-13T00:00:00+07:00",
+def group(class_id, extra_section_ids, students=1):
+    return {"class_id": class_id, "extra_section_ids": list(extra_section_ids), "students": students}
+
+
+def make_problem(*, rooms, lecturers, subjects, classes, sections, student_groups=()) -> Problem:
+    """Sĩ số lớp-môn (`size`) tự tính = sĩ số lớp + số sinh viên học thêm, trừ khi section đã có sẵn."""
+    class_size = {c["id"]: c["size"] for c in classes}
+    extra = {}
+    for g in student_groups:
+        for sid in g["extra_section_ids"]:
+            extra[sid] = extra.get(sid, 0) + g["students"]
+    sections = [{**s, "size": s.get("size", class_size.get(s["class_id"], 1) + extra.get(s["id"], 0))}
+                for s in sections]
+    snap = {"schema_version": "2.0", "generated_at": "2026-11-13T00:00:00+07:00",
             "semester": SEMESTER, "time_grid": TIME_GRID, "rooms": rooms, "lecturers": lecturers,
-            "subjects": subjects, "classes": classes, "sections": sections}
+            "subjects": subjects, "classes": classes, "sections": sections,
+            "student_groups": list(student_groups)}
     return Problem(snap)
 
 

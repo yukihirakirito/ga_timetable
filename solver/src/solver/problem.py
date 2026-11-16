@@ -19,7 +19,7 @@ import numpy as np
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 VALIDATOR_PATH = REPO_ROOT / "contracts" / "validate.py"
-SUPPORTED_SCHEMA_VERSIONS = {"1.0"}
+SUPPORTED_SCHEMA_VERSIONS = {"2.0"}
 
 
 class SnapshotError(ValueError):
@@ -107,8 +107,18 @@ class Problem:
         self.sec_total_periods = np.array([s["total_periods"] for s in sections])
         self.sec_total_sessions = np.array([s["total_sessions"] for s in sections])
         self.sec_room_type = np.array([rtype[subjects[s["subject_id"]]["room_type"]] for s in sections])
-        self.sec_size = self.class_size[self.sec_class]
+        self.sec_size = np.array([s["size"] for s in sections])  # sĩ số lớp-môn, tính cả sinh viên học thêm
         self.sec_weekly = self.sec_len * self.sec_spw  # tiết/tuần trong tuần mẫu
+
+        # --- Nhóm sinh viên học thêm (H10) --------------------------------------
+        # Nhóm g: group_students[g] sinh viên của lớp group_class[g], học mọi lớp-môn của lớp đó
+        # cộng các lớp-môn group_extra[g] (chỉ số lớp-môn, thuộc lớp khác).
+        sec_idx = {s["id"]: i for i, s in enumerate(sections)}
+        groups = snapshot["student_groups"]
+        self.group_class = np.array([class_idx[g["class_id"]] for g in groups], dtype=np.int64)
+        self.group_students = np.array([g["students"] for g in groups], dtype=np.int64)
+        self.group_extra: list[np.ndarray] = [
+            np.array([sec_idx[x] for x in g["extra_section_ids"]], dtype=np.int64) for g in groups]
 
         # Giảng viên dạy được (H7): miền giá trị của gen giảng viên
         teaches: dict[int, list[int]] = {}
@@ -163,6 +173,10 @@ class Problem:
     @property
     def n_sections(self) -> int:
         return len(self.sec_ids)
+
+    @property
+    def n_groups(self) -> int:
+        return len(self.group_class)
 
     @property
     def n_events(self) -> int:
@@ -247,4 +261,5 @@ class Problem:
         per_type = {t: int((self.room_type == i).sum()) for i, t in enumerate(self.room_types)}
         return (f"{self.n_classes} lớp, {self.n_sections} lớp-môn, {self.n_events} buổi/tuần, "
                 f"{self.n_lecturers} giảng viên, {self.n_rooms} phòng {per_type}, "
-                f"{int(self.sec_weekly.sum())} tiết/tuần")
+                f"{int(self.sec_weekly.sum())} tiết/tuần, {self.n_groups} nhóm SV học thêm "
+                f"({int(self.group_students.sum())} SV)")
